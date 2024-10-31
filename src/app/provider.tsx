@@ -1,12 +1,14 @@
-import { ThemeProvider } from '@mui/material';
+import { CssBaseline, ThemeProvider } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { SnackbarProvider } from 'notistack';
 import * as React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { HelmetProvider } from 'react-helmet-async';
 
 import { MainErrorFallback } from '@/components/errors/main';
-import { theme } from '@/config/theme';
+import { Spinner } from '@/components/layouts/page/spinner';
+import { defaultTheme } from '@/config/theme';
 import { AuthLoader } from '@/lib/auth';
 import { queryConfig } from '@/lib/react-query';
 
@@ -23,31 +25,19 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   );
 
   return (
-    <React.Suspense
-      fallback={
-        <div>
-          {/*<Spinner /> FIXME*/}
-        </div>
-      }
-    >
-      <ThemeProvider theme={theme}>
-        <ErrorBoundary FallbackComponent={MainErrorFallback}>
-          <HelmetProvider>
-            <QueryClientProvider client={queryClient}>
-              {import.meta.env.DEV && <ReactQueryDevtools />}
-              {/*<Notifications /> FIXME*/}
-              <AuthLoader
-                renderLoading={() => (
-                  <div>
-                    {/*<Spinner /> FIXME*/}
-                  </div>
-                )}
-              >
-                {children}
-              </AuthLoader>
-            </QueryClientProvider>
-          </HelmetProvider>
-        </ErrorBoundary>
+    <React.Suspense fallback={<Spinner />}>
+      <ThemeProvider theme={defaultTheme}>
+        <CssBaseline />
+        <SnackbarProvider>
+          <ErrorBoundary FallbackComponent={MainErrorFallback}>
+            <HelmetProvider>
+              <QueryClientProvider client={queryClient}>
+                {import.meta.env.DEV && <ReactQueryDevtools />}
+                <AuthLoader renderLoading={() => <Spinner />}>{children}</AuthLoader>
+              </QueryClientProvider>
+            </HelmetProvider>
+          </ErrorBoundary>
+        </SnackbarProvider>
       </ThemeProvider>
     </React.Suspense>
   );

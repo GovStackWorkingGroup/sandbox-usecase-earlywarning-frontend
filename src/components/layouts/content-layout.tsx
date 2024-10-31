@@ -1,3 +1,4 @@
+import { Box } from '@mui/material';
 import * as React from 'react';
 
 import { Head } from '../seo';
@@ -11,14 +12,7 @@ export const ContentLayout = ({ children, title }: ContentLayoutProps) => {
   return (
     <>
       <Head title={title} />
-      <div>
-        <div>
-          <h1>{title}</h1>
-        </div>
-        <div>
-          {children}
-        </div>
-      </div>
+      <Box>{children}</Box>
     </>
   );
 };

@@ -1,5 +1,7 @@
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
+
+import { paths } from '@/config/paths';
 
 export const NotFoundRoute = () => {
   return (
@@ -14,9 +16,9 @@ export const NotFoundRoute = () => {
     >
       <h1>404 - Not Found</h1>
       <p>Sorry, the page you are looking for does not exist.</p>
-      <Link to="/" replace>
+      <Button component={Link} to={paths.app.dashboard.getHref()} replace>
         Go to Home
-      </Link>
+      </Button>
     </Box>
   );
 };

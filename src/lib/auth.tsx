@@ -2,6 +2,7 @@ import { configureAuth } from 'react-query-auth';
 import { Navigate, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 
+import { paths } from '@/config/paths';
 import { AuthResponse, User } from '@/types/api';
 
 import { api } from './api-client';
@@ -23,22 +24,7 @@ export const loginInputSchema = z.object({
 
 export type LoginInput = z.infer<typeof loginInputSchema>;
 const loginWithEmailAndPassword = (data: LoginInput): Promise<AuthResponse> => {
-  return api.post('/auth/login', data);
-};
-
-export const registerInputSchema = z.object({
-  email: z.string().min(1, 'Required'),
-  firstName: z.string().min(1, 'Required'),
-  lastName: z.string().min(1, 'Required'),
-  password: z.string().min(1, 'Required'),
-});
-
-export type RegisterInput = z.infer<typeof registerInputSchema>;
-
-const registerWithEmailAndPassword = (
-  data: RegisterInput,
-): Promise<AuthResponse> => {
-  return api.post('/auth/register', data);
+  return api.post(paths.auth.login.path, data);
 };
 
 const authConfig = {
@@ -47,23 +33,20 @@ const authConfig = {
     const response = await loginWithEmailAndPassword(data);
     return response.user;
   },
-  registerFn: async (data: RegisterInput) => {
-    const response = await registerWithEmailAndPassword(data);
-    return response.user;
+  registerFn: async () => {
+    return {} as User;
   },
   logoutFn: logout,
 };
 
-export const { useUser, useLogin, useLogout, useRegister, AuthLoader } = configureAuth(authConfig);
+export const { useUser, useLogin, useLogout, AuthLoader } = configureAuth(authConfig);
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const user = useUser();
   const location = useLocation();
 
   if (!user.data) {
-    return (
-      <Navigate to={`/auth/login?redirectTo=${encodeURIComponent(location.pathname)}`} replace />
-    );
+    return <Navigate to={paths.auth.login.getHref(location.pathname)} replace />;
   }
 
   return children;

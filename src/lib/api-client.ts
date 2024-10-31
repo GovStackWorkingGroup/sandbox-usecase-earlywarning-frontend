@@ -1,6 +1,8 @@
 import Axios, { InternalAxiosRequestConfig } from 'axios';
+import { enqueueSnackbar } from 'notistack';
 
 import { env } from '@/config/env';
+import { paths } from '@/config/paths';
 
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
@@ -21,10 +23,17 @@ api.interceptors.response.use(
     return response.data;
   },
   (error) => {
+    const message = error.response?.data?.message || error.message;
+
+    enqueueSnackbar(message, {
+      variant: 'error',
+      preventDuplicate: true,
+    });
+
     if (error.response?.status === 401) {
       const searchParams = new URLSearchParams();
-      const redirectTo = searchParams.get('redirectTo');
-      window.location.href = `/auth/login?redirectTo=${redirectTo}`;
+      const redirectTo = searchParams.get('redirectTo') || window.location.pathname;
+      window.location.href = paths.auth.login.getHref(redirectTo);
     }
 
     return Promise.reject(error);

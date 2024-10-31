@@ -2,9 +2,8 @@ import { createTheme } from '@mui/material';
 
 const TOOLBAR_HEIGHT = 48;
 
-export const theme = createTheme({
+export const defaultTheme = createTheme({
   palette: {
-    mode: 'light',
     primary: {
       main: '#426834',
       dark: '#304e25',
@@ -35,10 +34,10 @@ export const theme = createTheme({
     divider: '#C3C8BB',
   },
   typography: {
-    fontFamily: 'Inter',
-    overline: {
-      fontFamily: 'Inter',
+    allVariants: {
+      color: '#191D16',
     },
+    fontFamily: 'Inter',
     h1: {
       fontWeight: 300,
     },
@@ -75,6 +74,15 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           color: '#131F0E',
+        },
+      },
+    },
+    MuiMenu: {
+      styleOverrides: {
+        list: {
+          '&[role="menu"]': {
+            backgroundColor: '#FCF9F6',
+          },
         },
       },
     },

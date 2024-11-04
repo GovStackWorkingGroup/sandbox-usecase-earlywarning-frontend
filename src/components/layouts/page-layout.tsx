@@ -1,16 +1,13 @@
 import { Box, Toolbar } from '@mui/material';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 
 import { Footer } from '@/components/layouts/page/footer';
 import { Header } from '@/components/layouts/page/header';
 import { Sidebar } from '@/components/layouts/page/sidebar';
+import { useSidebar } from '@/hooks/use-sidebar';
 
 export function PageLayout({ children }: Readonly<{ children: ReactNode }>) {
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
-
-  const handleSidebarToggle = () => {
-    setSidebarExpanded(!sidebarExpanded);
-  };
+  const { isSidebarOpen, openSidebar, toggleSidebar } = useSidebar(true);
 
   return (
     <Box
@@ -21,12 +18,15 @@ export function PageLayout({ children }: Readonly<{ children: ReactNode }>) {
         width: '100%',
       }}
     >
-      <Header sidebarExpanded={sidebarExpanded} handleSidebarToggle={handleSidebarToggle} />
+      <Header isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <Box sx={{ display: 'flex', flexGrow: 1 }}>
-        <Sidebar sidebarExpanded={sidebarExpanded} handleSidebarToggle={handleSidebarToggle} />
-        <Box component="main" sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
+        <Sidebar isSidebarOpen={isSidebarOpen} openSidebar={openSidebar} />
+        <Box
+          component="main"
+          sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2, pt: 0 }}
+        >
           <Toolbar />
-          <Box sx={{ flexGrow: 1, p: 4, pt: 2 }}>{children}</Box>
+          {children}
           <Footer />
         </Box>
       </Box>

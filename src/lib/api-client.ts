@@ -5,6 +5,11 @@ import { env } from '@/config/env';
 import { paths } from '@/config/paths';
 
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
+  const accessToken = localStorage.getItem('accessToken');
+  if (accessToken) {
+    config.headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+
   if (config.headers) {
     config.headers.Accept = 'application/json';
   }
@@ -12,6 +17,16 @@ function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   config.withCredentials = true;
   return config;
 }
+
+export const loginApi = Axios.create({
+  baseURL: env.API_URL,
+});
+
+export const meApi = Axios.create({
+  baseURL: env.API_URL,
+});
+
+meApi.interceptors.request.use(authRequestInterceptor);
 
 export const api = Axios.create({
   baseURL: env.API_URL,
@@ -30,9 +45,9 @@ api.interceptors.response.use(
       preventDuplicate: true,
     });
 
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && window.location.pathname !== paths.auth.login.path) {
       const searchParams = new URLSearchParams();
-      const redirectTo = searchParams.get('redirectTo') || window.location.pathname;
+      const redirectTo = searchParams.get('redirectTo') ?? window.location.pathname;
       window.location.href = paths.auth.login.getHref(redirectTo);
     }
 

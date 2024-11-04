@@ -1,3 +1,5 @@
+import { isAxiosError } from 'axios';
+import { enqueueSnackbar } from 'notistack';
 import { configureAuth } from 'react-query-auth';
 import { Navigate, useLocation } from 'react-router-dom';
 import { z } from 'zod';
@@ -5,16 +7,31 @@ import { z } from 'zod';
 import { paths } from '@/config/paths';
 import { AuthResponse, User } from '@/types/api';
 
-import { api } from './api-client';
+import { loginApi, meApi } from './api-client';
 
 const getUser = async (): Promise<User> => {
-  const response = await api.get('/auth/me');
+  try {
+    const response = await meApi.get('/v1/user/me');
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 401) {
+      const searchParams = new URLSearchParams();
+      const redirectTo = searchParams.get('redirectTo') ?? window.location.pathname;
 
-  return response.data;
+      if (window.location.pathname === paths.auth.login.path) {
+        return Promise.resolve({} as User);
+      } else {
+        window.location.href = paths.auth.login.getHref(redirectTo);
+      }
+    }
+
+    return Promise.reject(error);
+  }
 };
 
-const logout = (): Promise<void> => {
-  return api.post('/auth/logout');
+const logout = async (): Promise<void> => {
+  localStorage.removeItem('accessToken');
+  window.location.href = paths.auth.login.getHref();
 };
 
 export const loginInputSchema = z.object({
@@ -23,15 +40,29 @@ export const loginInputSchema = z.object({
 });
 
 export type LoginInput = z.infer<typeof loginInputSchema>;
-const loginWithEmailAndPassword = (data: LoginInput): Promise<AuthResponse> => {
-  return api.post(paths.auth.login.path, data);
+const loginWithEmailAndPassword = async (data: LoginInput): Promise<User> => {
+  try {
+    const response = await loginApi.post<AuthResponse>('/v1/auth/login', null, {
+      params: data,
+    });
+    localStorage.setItem('accessToken', response.data.id_token);
+    return getUser();
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 401) {
+      enqueueSnackbar('Provided credentials are invalid', {
+        variant: 'error',
+        preventDuplicate: true,
+      });
+    }
+
+    return Promise.reject(error);
+  }
 };
 
 const authConfig = {
   userFn: getUser,
   loginFn: async (data: LoginInput) => {
-    const response = await loginWithEmailAndPassword(data);
-    return response.user;
+    return await loginWithEmailAndPassword(data);
   },
   registerFn: async () => {
     return {} as User;

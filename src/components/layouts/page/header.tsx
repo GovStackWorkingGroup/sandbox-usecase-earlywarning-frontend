@@ -67,11 +67,11 @@ const Logo = () => {
 };
 
 type HeaderProps = {
-  sidebarExpanded: boolean;
-  handleSidebarToggle: () => void;
+  isSidebarOpen: boolean;
+  toggleSidebar: () => void;
 };
 
-export const Header = ({ sidebarExpanded, handleSidebarToggle }: HeaderProps) => {
+export const Header = ({ isSidebarOpen, toggleSidebar }: HeaderProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const userMenuOpen = Boolean(anchorEl);
@@ -91,8 +91,8 @@ export const Header = ({ sidebarExpanded, handleSidebarToggle }: HeaderProps) =>
       <Toolbar sx={{ px: 2, gap: 2 }} disableGutters>
         <Progress />
 
-        <IconButton aria-label="collapse" onClick={handleSidebarToggle}>
-          {sidebarExpanded ? <MenuOpen /> : <MenuIcon />}
+        <IconButton aria-label="collapse" onClick={toggleSidebar}>
+          {isSidebarOpen ? <MenuOpen /> : <MenuIcon />}
         </IconButton>
 
         <Logo />

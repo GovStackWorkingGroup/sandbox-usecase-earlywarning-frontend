@@ -85,11 +85,11 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 type SidebarProps = {
-  sidebarExpanded: boolean;
-  handleSidebarToggle: () => void;
-}
+  isSidebarOpen: boolean;
+  openSidebar: () => void;
+};
 
-export const Sidebar = ({ sidebarExpanded, handleSidebarToggle }: SidebarProps) => {
+export const Sidebar = ({ isSidebarOpen, openSidebar }: SidebarProps) => {
   const navigation = [
     { name: 'Dashboard', to: paths.app.dashboard.getHref(), icon: SpaceDashboardOutlined },
     { name: 'Threats', to: paths.app.threats.getHref(), icon: ContentPasteOutlined, count: 1 }, // TODO: Add items count
@@ -106,7 +106,7 @@ export const Sidebar = ({ sidebarExpanded, handleSidebarToggle }: SidebarProps) 
   return (
     <Drawer
       variant="permanent"
-      open={sidebarExpanded}
+      open={isSidebarOpen}
       sx={{
         flexShrink: 0,
         [`& .MuiDrawer-paper`]: { boxSizing: 'border-box' },
@@ -125,12 +125,12 @@ export const Sidebar = ({ sidebarExpanded, handleSidebarToggle }: SidebarProps) 
       >
         <Box sx={{ overflow: 'hidden' }}>
           <Box sx={{ width: '100%', mb: 2 }}>
-            {sidebarExpanded ? (
+            {isSidebarOpen ? (
               <TextField
                 id="sidebar-search"
                 placeholder="Search"
                 size="small"
-                sx={[{ width: '100%' }, sidebarExpanded ? { mr: 3 } : { mr: 'auto' }]}
+                sx={[{ width: '100%' }, isSidebarOpen ? { mr: 3 } : { mr: 'auto' }]}
                 slotProps={{
                   input: {
                     sx: { pl: 1.5 },
@@ -147,7 +147,7 @@ export const Sidebar = ({ sidebarExpanded, handleSidebarToggle }: SidebarProps) 
                 }}
               />
             ) : (
-              <IconButton sx={{ ml: 0.5 }} aria-label="search" onClick={handleSidebarToggle}>
+              <IconButton sx={{ ml: 0.5 }} aria-label="search" onClick={openSidebar}>
                 <SearchOutlined />
               </IconButton>
             )}
@@ -172,7 +172,7 @@ export const Sidebar = ({ sidebarExpanded, handleSidebarToggle }: SidebarProps) 
                   </ListItemIcon>
                   <ListItemText
                     primary={item.name}
-                    sx={[sidebarExpanded ? { opacity: 1 } : { opacity: 0 }]}
+                    sx={[isSidebarOpen ? { opacity: 1 } : { opacity: 0 }]}
                   />
                   <Typography
                     sx={{
@@ -191,7 +191,7 @@ export const Sidebar = ({ sidebarExpanded, handleSidebarToggle }: SidebarProps) 
             ))}
           </List>
         </Box>
-        {sidebarExpanded && (
+        {isSidebarOpen && (
           <Box sx={{ mt: 'auto', overflow: 'hidden' }}>
             <List>
               {footer.map((item) => (

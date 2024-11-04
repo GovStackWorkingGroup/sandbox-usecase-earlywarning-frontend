@@ -24,8 +24,8 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
   const isLargeScreen = useMediaQuery(theme.breakpoints.up('md'));
 
   useEffect(() => {
-    if (user.data) {
-      navigate(redirectTo ? redirectTo : paths.app.dashboard.getHref(), {
+    if (user.data && Object.keys(user.data).length > 0) {
+      navigate(redirectTo ?? paths.app.dashboard.getHref(), {
         replace: true,
       });
     }

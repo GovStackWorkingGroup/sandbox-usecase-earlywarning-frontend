@@ -12,7 +12,7 @@ export const ContentLayout = ({ children, title }: ContentLayoutProps) => {
   return (
     <>
       <Head title={title} />
-      <Box>{children}</Box>
+      <Box sx={{ flexGrow: 1, p: 4 }}>{children}</Box>
     </>
   );
 };

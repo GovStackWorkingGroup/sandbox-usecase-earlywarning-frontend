@@ -1,15 +1,11 @@
-import Axios, { InternalAxiosRequestConfig } from 'axios';
+import Axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { enqueueSnackbar } from 'notistack';
 
 import { env } from '@/config/env';
 import { paths } from '@/config/paths';
+import { ErrorResponse } from '@/types/api';
 
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
-  const accessToken = localStorage.getItem('accessToken');
-  if (accessToken) {
-    config.headers['Authorization'] = `Bearer ${accessToken}`;
-  }
-
   if (config.headers) {
     config.headers.Accept = 'application/json';
   }
@@ -18,39 +14,52 @@ function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   return config;
 }
 
+function handleUserApiResponse(response: AxiosResponse) {
+  return response.data;
+}
+
+function handleUserApiError(error: AxiosError<ErrorResponse>) {
+  const message = error.response?.data?.message || error.message;
+
+  enqueueSnackbar(message, {
+    variant: 'error',
+    preventDuplicate: true,
+  });
+
+  if (error.response?.status === 401 && window.location.pathname !== paths.auth.login.path) {
+    const searchParams = new URLSearchParams();
+    const redirectTo = searchParams.get('redirectTo') ?? window.location.pathname;
+    window.location.href = paths.auth.login.getHref(redirectTo);
+  }
+
+  return Promise.reject(error);
+}
+
 export const loginApi = Axios.create({
-  baseURL: env.API_URL,
+  baseURL: env.USER_API_URL,
 });
 
-export const meApi = Axios.create({
-  baseURL: env.API_URL,
+export const userApi = Axios.create({
+  baseURL: env.USER_API_URL,
 });
 
-meApi.interceptors.request.use(authRequestInterceptor);
+userApi.interceptors.request.use(authRequestInterceptor);
+userApi.interceptors.response.use(handleUserApiResponse, handleUserApiError);
 
-export const api = Axios.create({
-  baseURL: env.API_URL,
+export const threatApi = Axios.create({
+  baseURL: env.THREAT_API_URL,
 });
 
-api.interceptors.request.use(authRequestInterceptor);
-api.interceptors.response.use(
-  (response) => {
-    return response.data;
-  },
-  (error) => {
-    const message = error.response?.data?.message || error.message;
+threatApi.interceptors.request.use(authRequestInterceptor);
+threatApi.interceptors.response.use(handleUserApiResponse, handleUserApiError);
 
-    enqueueSnackbar(message, {
-      variant: 'error',
-      preventDuplicate: true,
-    });
+export const attachToken = (headers?: Record<string, string>) => {
+  const accessToken = localStorage.getItem('accessToken');
 
-    if (error.response?.status === 401 && window.location.pathname !== paths.auth.login.path) {
-      const searchParams = new URLSearchParams();
-      const redirectTo = searchParams.get('redirectTo') ?? window.location.pathname;
-      window.location.href = paths.auth.login.getHref(redirectTo);
-    }
-
-    return Promise.reject(error);
-  },
-);
+  return {
+    headers: {
+      ...headers,
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    },
+  };
+};

@@ -7,11 +7,13 @@ import { z } from 'zod';
 import { paths } from '@/config/paths';
 import { AuthResponse, User } from '@/types/api';
 
-import { loginApi, meApi } from './api-client';
+import { attachToken, loginApi } from './api-client';
 
 const getUser = async (): Promise<User> => {
   try {
-    const response = await meApi.get('/v1/user/me');
+    const response = await loginApi.get('/v1/user/me', {
+      headers: attachToken().headers,
+    });
     return response.data;
   } catch (error) {
     if (isAxiosError(error) && error.response?.status === 401) {

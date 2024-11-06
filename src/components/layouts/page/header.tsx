@@ -1,7 +1,7 @@
-import { Logout, Menu as MenuIcon, MenuOpen, Person } from '@mui/icons-material';
 import {
   AppBar,
   Avatar,
+  Icon,
   IconButton,
   LinearProgress,
   ListItemIcon,
@@ -92,7 +92,9 @@ export const Header = ({ isSidebarOpen, toggleSidebar }: HeaderProps) => {
         <Progress />
 
         <IconButton aria-label="collapse" onClick={toggleSidebar}>
-          {isSidebarOpen ? <MenuOpen /> : <MenuIcon />}
+          <Icon sx={{ color: '#131F0E' }} baseClassName="material-symbols-outlined">
+            {isSidebarOpen ? 'menu_open' : 'menu'}
+          </Icon>
         </IconButton>
 
         <Logo />
@@ -146,13 +148,25 @@ export const Header = ({ isSidebarOpen, toggleSidebar }: HeaderProps) => {
         >
           <MenuItem onClick={() => navigate(paths.app.dashboard.path)}>
             <ListItemIcon>
-              <Person fontSize="small" />
+              <Icon
+                fontSize="small"
+                baseClassName="material-symbols-outlined"
+                sx={{ color: '#131F0E', fontVariationSettings: "'FILL' 1" }}
+              >
+                person
+              </Icon>
             </ListItemIcon>
             <ListItemText>My profile</ListItemText>
           </MenuItem>
           <MenuItem onClick={() => logout.mutate({})}>
             <ListItemIcon>
-              <Logout fontSize="small" />
+              <Icon
+                fontSize="small"
+                baseClassName="material-symbols-outlined"
+                sx={{ color: '#131F0E' }}
+              >
+                logout
+              </Icon>
             </ListItemIcon>
             <ListItemText>Log out</ListItemText>
           </MenuItem>

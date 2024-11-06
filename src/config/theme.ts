@@ -3,6 +3,15 @@ import { createTheme } from '@mui/material';
 const TOOLBAR_HEIGHT = 48;
 
 export const defaultTheme = createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 900,
+      lg: 1340,
+      xl: 1536,
+    },
+  },
   palette: {
     primary: {
       main: '#426834',
@@ -82,6 +91,50 @@ export const defaultTheme = createTheme({
         list: {
           '&[role="menu"]': {
             backgroundColor: '#FCF9F6',
+          },
+        },
+      },
+    },
+    MuiTableContainer: {
+      styleOverrides: {
+        root: {
+          border: '1px solid #C3C8BB',
+        },
+      },
+    },
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#F8FAF0',
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          borderBottom: '1px solid #C3C8BB',
+        },
+      },
+    },
+    MuiTablePagination: {
+      styleOverrides: {
+        root: {
+          fontSize: 12,
+          ':last-child': {
+            paddingRight: 4,
+          },
+          border: 'none',
+        },
+        selectLabel: {
+          opacity: 0.6,
+          fontSize: 'inherit',
+        },
+        displayedRows: {
+          fontSize: 'inherit',
+        },
+        actions: {
+          '& .Mui-disabled svg': {
+            color: '#ccc',
           },
         },
       },

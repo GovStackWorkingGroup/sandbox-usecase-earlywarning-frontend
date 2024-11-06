@@ -1,15 +1,7 @@
 import {
-  BroadcastOnHome,
-  ChatBubbleOutline,
-  ContentPasteOutlined,
-  MapOutlined,
-  OpenInNew,
-  SearchOutlined,
-  SpaceDashboardOutlined,
-} from '@mui/icons-material';
-import {
   Box,
   CSSObject,
+  Icon,
   IconButton,
   List,
   ListItem,
@@ -23,7 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
-import React, { ReactElement, SVGProps } from 'react';
+import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
 import { paths } from '@/config/paths';
@@ -31,7 +23,7 @@ import { paths } from '@/config/paths';
 type SideNavigationItem = {
   name: string;
   to: string;
-  icon: (props: SVGProps<SVGSVGElement>) => ReactElement;
+  icon: string;
   count?: number;
   disabled?: boolean;
 };
@@ -91,16 +83,16 @@ type SidebarProps = {
 
 export const Sidebar = ({ isSidebarOpen, openSidebar }: SidebarProps) => {
   const navigation = [
-    { name: 'Dashboard', to: paths.app.dashboard.getHref(), icon: SpaceDashboardOutlined },
-    { name: 'Threats', to: paths.app.threats.getHref(), icon: ContentPasteOutlined, count: 1 }, // TODO: Add items count
-    { name: 'Broadcasts', to: paths.app.broadcasts.getHref(), icon: BroadcastOnHome, count: 4 }, // TODO: Add items count
-    { name: 'Feedbacks', to: paths.app.feedbacks.getHref(), icon: ChatBubbleOutline, count: 23 }, // TODO: Add items count
-    { name: 'Map View', to: paths.app.mapView.getHref(), icon: MapOutlined, disabled: true },
+    { name: 'Dashboard', to: paths.app.dashboard.getHref(), icon: 'space_dashboard' },
+    { name: 'Threats', to: paths.app.threats.getHref(), icon: 'content_paste', count: 1 }, // TODO: Add items count
+    { name: 'Broadcasts', to: paths.app.broadcasts.getHref(), icon: 'broadcast_on_home', count: 4 }, // TODO: Add items count
+    { name: 'Feedbacks', to: paths.app.feedbacks.getHref(), icon: 'chat_bubble', count: 23 }, // TODO: Add items count
+    { name: 'Map View', to: paths.app.mapView.getHref(), icon: 'map', disabled: true },
   ].filter(Boolean) as SideNavigationItem[];
 
   const footer = [
-    { name: 'Drought Watch ICPAC', to: 'https://droughtwatch.icpac.net/', icon: OpenInNew },
-    { name: 'Hazard Watch ICPAC', to: 'https://eahazardswatch.icpac.net/', icon: OpenInNew },
+    { name: 'Drought Watch ICPAC', to: 'https://droughtwatch.icpac.net/', icon: 'open_in_new' },
+    { name: 'Hazard Watch ICPAC', to: 'https://eahazardswatch.icpac.net/', icon: 'open_in_new' },
   ].filter(Boolean) as SideNavigationItem[];
 
   return (
@@ -108,6 +100,7 @@ export const Sidebar = ({ isSidebarOpen, openSidebar }: SidebarProps) => {
       variant="permanent"
       open={isSidebarOpen}
       sx={{
+        backgroundColor: '#FCF9F6',
         flexShrink: 0,
         [`& .MuiDrawer-paper`]: { boxSizing: 'border-box' },
       }}
@@ -134,7 +127,7 @@ export const Sidebar = ({ isSidebarOpen, openSidebar }: SidebarProps) => {
                 slotProps={{
                   input: {
                     sx: { pl: 1.5 },
-                    startAdornment: <SearchOutlined />,
+                    startAdornment: <Icon baseClassName="material-symbols-outlined">search</Icon>,
                   },
                   htmlInput: {
                     sx: {
@@ -148,7 +141,9 @@ export const Sidebar = ({ isSidebarOpen, openSidebar }: SidebarProps) => {
               />
             ) : (
               <IconButton sx={{ ml: 0.5 }} aria-label="search" onClick={openSidebar}>
-                <SearchOutlined />
+                <Icon sx={{ color: '#0F150C' }} baseClassName="material-symbols-outlined">
+                  search
+                </Icon>
               </IconButton>
             )}
           </Box>
@@ -168,7 +163,9 @@ export const Sidebar = ({ isSidebarOpen, openSidebar }: SidebarProps) => {
               >
                 <ListItemButton disabled={item.disabled} sx={{ px: 1.5 }}>
                   <ListItemIcon sx={{ minWidth: 36 }}>
-                    <item.icon />
+                    <Icon sx={{ color: '#0F150C' }} baseClassName="material-symbols-outlined">
+                      {item.icon}
+                    </Icon>
                   </ListItemIcon>
                   <ListItemText
                     primary={item.name}
@@ -204,7 +201,9 @@ export const Sidebar = ({ isSidebarOpen, openSidebar }: SidebarProps) => {
                 >
                   <ListItemButton sx={{ px: 1 }}>
                     <ListItemIcon sx={{ minWidth: 36 }}>
-                      <item.icon />
+                      <Icon sx={{ color: '#0F150C' }} baseClassName="material-symbols-outlined">
+                        {item.icon}
+                      </Icon>
                     </ListItemIcon>
                     <ListItemText primary={item.name} />
                   </ListItemButton>

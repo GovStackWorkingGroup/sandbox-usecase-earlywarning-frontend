@@ -117,6 +117,14 @@ export const Header = ({ isSidebarOpen, toggleSidebar }: HeaderProps) => {
           open={userMenuOpen}
           onClose={handleUserMenuClose}
           onClick={handleUserMenuClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
           slotProps={{
             paper: {
               elevation: 0,

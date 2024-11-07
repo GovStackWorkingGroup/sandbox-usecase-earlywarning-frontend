@@ -15,9 +15,7 @@ export const DashboardRoute = () => {
               <Typography variant="h5" sx={{ lineHeight: 'normal' }}>
                 Overview
               </Typography>
-              <Typography
-                sx={{ fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase' }}
-              >
+              <Typography fontSize={12} letterSpacing={1} textTransform="uppercase">
                 Last 7 days
               </Typography>
             </Grid>
@@ -197,7 +195,7 @@ export const DashboardRoute = () => {
         <Typography fontSize={12} color="#43483F" letterSpacing={0.4}>
           Within My Jurisdiction
         </Typography>
-        <ThreatsTable />
+        <ThreatsTable country="Kenya" initialRowsPerPage={5} sort="periodStart,desc" />
       </Box>
     </ContentLayout>
   );

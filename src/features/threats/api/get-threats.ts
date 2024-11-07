@@ -5,22 +5,27 @@ import { QueryConfig } from '@/lib/react-query';
 import { Paged, Threat } from '@/types/api';
 
 export const getThreatsByCountry = (
-  country: string,
+  country?: string,
+  active = true,
   page = 1,
   size = 10,
   sort?: string,
 ): Promise<Paged<Threat>> => {
   const params: Record<string, any> = {
-    country,
+    active,
     page,
     size,
   };
+
+  if (country) {
+    params.country = country;
+  }
 
   if (sort) {
     params.sort = sort;
   }
 
-  return threatApi.get(`/v1/threat/getAllThreatsForCountry`, {
+  return threatApi.get(`/v1/threats`, {
     params,
     headers: attachToken().headers,
   });
@@ -28,23 +33,26 @@ export const getThreatsByCountry = (
 
 export const getThreatsByCountryQueryOptions = ({
   country,
+  active,
   page,
   size,
   sort,
 }: {
-  country: string;
+  country?: string;
+  active?: boolean;
   page?: number;
   size?: number;
   sort?: string;
 }) => {
   return queryOptions({
-    queryKey: ['threats', { country, page, size, sort }],
-    queryFn: () => getThreatsByCountry(country, page, size, sort),
+    queryKey: ['threats', { country, active, page, size, sort }],
+    queryFn: () => getThreatsByCountry(country, active, page, size, sort),
   });
 };
 
 type UseThreatsOptions = {
-  country: string;
+  country?: string;
+  active?: boolean;
   page?: number;
   size?: number;
   sort?: string;
@@ -54,12 +62,13 @@ type UseThreatsOptions = {
 export const useThreatsByCountry = ({
   queryConfig,
   country,
+  active,
   page,
   size,
   sort,
 }: UseThreatsOptions) => {
   return useQuery({
-    ...getThreatsByCountryQueryOptions({ country, page, size, sort }),
+    ...getThreatsByCountryQueryOptions({ country, active, page, size, sort }),
     ...queryConfig,
   });
 };

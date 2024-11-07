@@ -109,10 +109,27 @@ export const defaultTheme = createTheme({
         },
       },
     },
-    MuiTableCell: {
+    MuiTableBody: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#FFFEFC',
+          '& tr:last-child': {
+            borderBottom: 'none',
+          },
+        },
+      },
+    },
+    MuiTableRow: {
       styleOverrides: {
         root: {
           borderBottom: '1px solid #C3C8BB',
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          borderBottom: 'none',
         },
       },
     },
@@ -123,7 +140,7 @@ export const defaultTheme = createTheme({
           ':last-child': {
             paddingRight: 4,
           },
-          border: 'none',
+          borderTop: '1px solid #C3C8BB',
         },
         selectLabel: {
           opacity: 0.6,

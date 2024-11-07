@@ -1,10 +1,15 @@
 import {
+  Badge,
   Box,
+  Checkbox,
   Chip,
   ChipProps,
   Divider,
+  FormControlLabel,
   Icon,
   IconButton,
+  Menu,
+  MenuItem,
   Paper,
   Table,
   TableBody,
@@ -22,44 +27,32 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { useThreatsByCountry } from '@/features/threats/api/get-threats';
 import { Threat } from '@/types/api';
 
+const threatIcons: { [key: string]: string } = {
+  Cyclone: 'storm',
+  Drought: 'total_dissolved_solids',
+  Flood: 'thunderstorm',
+  Heatwave: 'thermometer_add',
+  Locust: 'pest_control',
+};
+
 const getThreatIcon = (type: string) => {
-  switch (type) {
-    case 'Cyclone':
-      return 'storm';
-    case 'Drought':
-      return 'total_dissolved_solids';
-    case 'Flood':
-      return 'thunderstorm';
-    case 'Heatwave':
-      return 'thermometer_add';
-    case 'Locust':
-      return 'pest_control';
-    default:
-      return null;
-  }
+  const icon = threatIcons[type] || '';
+
+  return (
+    <Icon baseClassName="material-symbols-outlined" sx={{ color: '#43483F', mr: 1 }}>
+      {icon}
+    </Icon>
+  );
+};
+
+const severityMap: { [key: string]: { label: string; color: ChipProps['color'] } } = {
+  HIGH: { label: 'High', color: 'error' },
+  MEDIUM: { label: 'Medium', color: 'warning' },
+  LOW: { label: 'Low', color: 'success' },
 };
 
 const getSeverityChip = (severity: string) => {
-  let label: string;
-  let color: ChipProps['color'];
-
-  switch (severity) {
-    case 'HIGH':
-      label = 'High';
-      color = 'error';
-      break;
-    case 'MEDIUM':
-      label = 'Medium';
-      color = 'warning';
-      break;
-    case 'LOW':
-      label = 'Low';
-      color = 'success';
-      break;
-    default:
-      label = 'Unknown';
-      color = 'default';
-  }
+  const { label, color } = severityMap[severity] || { label: 'Unknown', color: 'default' };
 
   return (
     <Chip
@@ -85,20 +78,38 @@ const formatPeriod = (start: string, end: string) => {
   return `${startDate} • ${endDate}`;
 };
 
-export const ThreatsTable = () => {
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+export type ThreatsTableProps = {
+  country: string;
+  initialRowsPerPage: number;
+  sort: string;
+  showPagination?: boolean;
+  showFilters?: boolean;
+};
+
+export const ThreatsTable = ({
+  country,
+  initialRowsPerPage,
+  sort,
+  showPagination = true,
+  showFilters = false,
+}: ThreatsTableProps) => {
+  const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState<Threat[]>([]);
   const [pagination, setPagination] = useState({
     totalElements: 0,
     totalPages: 0,
   });
+  const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
+  const [filterWithinJurisdiction, setFilterWithinJurisdiction] = useState(true);
+  const [filterActiveOnly, setFilterActiveOnly] = useState(true);
 
   const threatsQuery = useThreatsByCountry({
-    country: 'Kenya',
+    country: filterWithinJurisdiction ? country : undefined,
+    active: filterActiveOnly,
     page: page,
     size: rowsPerPage,
-    sort: 'periodStart,desc',
+    sort: sort,
   });
 
   useEffect(() => {
@@ -110,6 +121,24 @@ export const ThreatsTable = () => {
       });
     }
   }, [threatsQuery.data]);
+
+  const filterOpen = Boolean(filterAnchorEl);
+
+  const handleFilterButtonClick = (event: React.MouseEvent<HTMLElement>) => {
+    setFilterAnchorEl(event.currentTarget);
+  };
+
+  const handleFilterClose = () => {
+    setFilterAnchorEl(null);
+  };
+
+  const handleFilterWithinJurisdictionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilterWithinJurisdiction(event.target.checked);
+  };
+
+  const handleFilterActiveOnlyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilterActiveOnly(event.target.checked);
+  };
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -134,17 +163,105 @@ export const ThreatsTable = () => {
     ),
   );
 
+  const activeFiltersCount = [filterWithinJurisdiction, filterActiveOnly].filter(Boolean).length;
+
   return (
     <TableContainer component={Paper} elevation={0} sx={{ mt: 2 }}>
-      <Table sx={{ minWidth: 650 }}>
+      <Table>
         <TableHead>
+          {showFilters && (
+            <TableRow sx={{ backgroundColor: '#D8E7CC' }}>
+              <TableCell colSpan={6} sx={{ py: 1 }}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                  <Typography fontSize={20}>Threat list</Typography>
+                  <IconButton
+                    onClick={handleFilterButtonClick}
+                    sx={{
+                      backgroundColor: 'rgba(0, 0, 0, 0.12)',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.12)',
+                      },
+                    }}
+                  >
+                    <Badge
+                      badgeContent={activeFiltersCount}
+                      sx={{ '& .MuiBadge-badge': { backgroundColor: '#426834', color: 'white' } }}
+                    >
+                      <Icon baseClassName="material-symbols-outlined" sx={{ color: '#386667' }}>
+                        filter_list
+                      </Icon>
+                    </Badge>
+                  </IconButton>
+                  <Menu
+                    anchorEl={filterAnchorEl}
+                    open={filterOpen}
+                    onClose={handleFilterClose}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    slotProps={{
+                      paper: {
+                        elevation: 0,
+                        sx: {
+                          overflow: 'visible',
+                          filter: 'drop-shadow(0px 1px 2px rgba(0,0,0,0.32))',
+                          mt: 0.5,
+                          '&::before': {
+                            content: '""',
+                            display: 'block',
+                            position: 'absolute',
+                            top: 0,
+                            right: 14,
+                            width: 10,
+                            height: 10,
+                            bgcolor: 'background.paper',
+                            transform: 'translateY(-50%) rotate(45deg)',
+                            zIndex: 0,
+                          },
+                        },
+                      },
+                    }}
+                  >
+                    <MenuItem>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            disableRipple={true}
+                            checked={filterWithinJurisdiction}
+                            onChange={handleFilterWithinJurisdictionChange}
+                          />
+                        }
+                        label="Within Jurisdiction"
+                      />
+                    </MenuItem>
+                    <MenuItem>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={filterActiveOnly}
+                            onChange={handleFilterActiveOnlyChange}
+                          />
+                        }
+                        label="Active Only"
+                      />
+                    </MenuItem>
+                  </Menu>
+                </Box>
+              </TableCell>
+            </TableRow>
+          )}
           <TableRow>
-            <TableCell sx={{ width: 160 }}>Type</TableCell>
+            <TableCell sx={{ width: 160, minWidth: 160 }}>Type</TableCell>
             <TableCell sx={{ flex: 1, minWidth: 240 }}>Location</TableCell>
-            <TableCell sx={{ width: 136 }}>Severity</TableCell>
-            <TableCell sx={{ width: 200 }}>Period</TableCell>
-            <TableCell sx={{ width: 120 }}>Broadcasts</TableCell>
-            <TableCell sx={{ width: 120 }}>Actions</TableCell>
+            <TableCell sx={{ width: 136, minWidth: 136 }}>Severity</TableCell>
+            <TableCell sx={{ width: 200, minWidth: 200 }}>Period</TableCell>
+            <TableCell sx={{ width: 120, minWidth: 120 }}>Broadcasts</TableCell>
+            <TableCell sx={{ width: 120, minWidth: 120 }}>Actions</TableCell>
           </TableRow>
         </TableHead>
         {rows.length > 0 ? (
@@ -154,12 +271,7 @@ export const ThreatsTable = () => {
                 <TableRow key={row.threatUUID}>
                   <TableCell>
                     <Box display="flex" alignItems="center">
-                      <Icon
-                        baseClassName="material-symbols-outlined"
-                        sx={{ color: '#43483F', mr: 1 }}
-                      >
-                        {getThreatIcon(row.type)}
-                      </Icon>
+                      {getThreatIcon(row.type)}
                       {row.type}
                     </Box>
                   </TableCell>
@@ -243,24 +355,26 @@ export const ThreatsTable = () => {
                 </TableRow>
               ))}
             </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25]}
-                  colSpan={6}
-                  count={pagination.totalElements}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-              </TableRow>
-            </TableFooter>
+            {showPagination && (
+              <TableFooter>
+                <TableRow sx={{ border: 0 }}>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25, 50]}
+                    colSpan={6}
+                    count={pagination.totalElements}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                  />
+                </TableRow>
+              </TableFooter>
+            )}
           </>
         ) : (
           <TableBody>
             <TableRow>
-              <TableCell colSpan={6} sx={{ border: 0 }}>
+              <TableCell colSpan={6}>
                 <Box
                   sx={{
                     my: '128px',

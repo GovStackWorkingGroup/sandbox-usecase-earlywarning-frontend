@@ -19,9 +19,17 @@ export const paths = {
       path: 'threats',
       getHref: () => '/threats',
     },
+    threat: {
+      path: 'threats/:threatId',
+      getHref: (id: string) => `/threats/${id}`,
+    },
     broadcasts: {
       path: 'broadcasts',
       getHref: () => '/broadcasts',
+    },
+    broadcast: {
+      path: 'broadcasts/:broadcastId',
+      getHref: (id: string) => `/broadcasts/${id}`,
     },
     feedbacks: {
       path: 'feedbacks',

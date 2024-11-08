@@ -35,16 +35,40 @@ export const createAppRouter = (queryClient: QueryClient) =>
         {
           path: paths.app.threats.path,
           lazy: async () => {
-            const { ThreatsRoute } = await import('./routes/threats');
+            const { ThreatsRoute } = await import('./routes/threats/threats');
             return { Component: ThreatsRoute };
+          },
+          ErrorBoundary: AppRootErrorBoundary,
+        },
+        {
+          path: paths.app.threat.path,
+          lazy: async () => {
+            const { ThreatRoute, threatLoader } = await import('./routes/threats/threat');
+            return {
+              Component: ThreatRoute,
+              loader: threatLoader(queryClient),
+            };
           },
           ErrorBoundary: AppRootErrorBoundary,
         },
         {
           path: paths.app.broadcasts.path,
           lazy: async () => {
-            const { BroadcastsRoute } = await import('./routes/broadcasts');
+            const { BroadcastsRoute } = await import('./routes/broadcasts/broadcasts');
             return { Component: BroadcastsRoute };
+          },
+          ErrorBoundary: AppRootErrorBoundary,
+        },
+        {
+          path: paths.app.broadcast.path,
+          lazy: async () => {
+            const { BroadcastRoute, broadcastLoader } = await import(
+              './routes/broadcasts/broadcast'
+            );
+            return {
+              Component: BroadcastRoute,
+              loader: broadcastLoader(queryClient),
+            };
           },
           ErrorBoundary: AppRootErrorBoundary,
         },

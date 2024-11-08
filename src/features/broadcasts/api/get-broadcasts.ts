@@ -2,15 +2,17 @@ import { queryOptions, useQuery } from '@tanstack/react-query';
 
 import { attachToken, threatApi } from '@/lib/api-client';
 import { QueryConfig } from '@/lib/react-query';
-import { Paged, Threat } from '@/types/api';
+import { Broadcast, Paged } from '@/types/api';
 
-export const getThreats = (
+export const getBroadcasts = (
   country?: string,
+  status?: string,
+  userId?: string,
   active = true,
   page = 1,
   size = 10,
   sort?: string,
-): Promise<Paged<Threat>> => {
+): Promise<Paged<Broadcast>> => {
   const params: Record<string, any> = {
     active,
     page,
@@ -21,54 +23,70 @@ export const getThreats = (
     params.country = country;
   }
 
+  if (status) {
+    params.status = status;
+  }
+
+  if (userId) {
+    params.userId = userId;
+  }
+
   if (sort) {
     params.sort = sort;
   }
 
-  return threatApi.get(`/v1/threats`, {
+  return threatApi.get(`/v1/broadcasts`, {
     params,
     headers: attachToken().headers,
   });
 };
 
-export const getThreatsQueryOptions = ({
+export const getBroadcastsQueryOptions = ({
   country,
+  status,
+  userId,
   active,
   page,
   size,
   sort,
 }: {
   country?: string;
+  status?: string;
+  userId?: string;
   active?: boolean;
   page?: number;
   size?: number;
   sort?: string;
 }) => {
   return queryOptions({
-    queryKey: ['threats', { country, active, page, size, sort }],
-    queryFn: () => getThreats(country, active, page, size, sort),
+    queryKey: ['broadcasts', { country, status, userId, active, page, size, sort }],
+    queryFn: () => getBroadcasts(country, status, userId, active, page, size, sort),
   });
 };
 
-type UseThreatsOptions = {
+type UseBroadcastsOptions = {
   country?: string;
+  status?: string;
+  userId?: string;
   active?: boolean;
   page?: number;
   size?: number;
   sort?: string;
-  queryConfig?: QueryConfig<typeof getThreatsQueryOptions>;
+  queryConfig?: QueryConfig<typeof getBroadcastsQueryOptions>;
 };
 
-export const useThreats = ({
+export const useBroadcasts = ({
   queryConfig,
   country,
+  status,
+  userId,
   active,
   page,
   size,
   sort,
-}: UseThreatsOptions) => {
+}: UseBroadcastsOptions) => {
   return useQuery({
-    ...getThreatsQueryOptions({ country, active, page, size, sort }),
+    ...getBroadcastsQueryOptions({ country, status, userId, active, page, size, sort }),
     ...queryConfig,
   });
 };

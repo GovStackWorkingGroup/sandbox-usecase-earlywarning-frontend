@@ -2,15 +2,6 @@ export type ErrorResponse = {
   message?: string;
 };
 
-export type BaseEntity = {
-  id: string;
-  createdAt: number;
-};
-
-export type Entity<T> = {
-  [K in keyof T]: T[K];
-} & BaseEntity;
-
 export type Paged<T> = {
   content: T[];
   pageable: {
@@ -40,33 +31,69 @@ export type Paged<T> = {
   empty: boolean;
 };
 
-export type County = Entity<{
+export type County = {
   countyId: number;
   countyName: string;
-}>;
+};
 
-export type Country = Entity<{
+export type Country = {
   countryName: string;
   affectedCounties: County[];
-}>;
+};
 
-export type Threat = Entity<{
-  threatUUID: string;
+export type Threat = {
+  threatId: string;
+  threatNumber: number;
   type: string;
   severity: string;
   affectedCountries: Country[];
   range: string;
   periodStart: string;
   periodEnd: string;
-}>;
+  active: boolean;
+  notes: string;
+};
 
-export type User = Entity<{
+export type Broadcast = {
+  broadcastId: string;
+  threatId: string;
+  title: string;
+  status: string;
+  notes: string;
+  primaryLangMessage: string;
+  secondaryLangMessage: string;
+  countryId: number;
+  countryName: string;
+  periodStart: string;
+  periodEnd: string;
+  createdAt: string;
+  initiated: string;
+  createdBy: string;
+  affectedCounties: County[];
+};
+
+export type Dashboard = {
+  threats: {
+    activeThreatsCount: number;
+    highPriorityCount: number;
+  };
+  broadcasts: {
+    sentCount: number;
+    pendingCount: number;
+  };
+  feedbacks: {
+    receivedCount: number;
+    todayCount: number;
+  };
+};
+
+export type User = {
   firstName: string;
   lastName: string;
   email: string;
   userUUID: string;
   country: string;
-}>;
+};
 
 export type AuthResponse = {
   id_token: string;

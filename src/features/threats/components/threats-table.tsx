@@ -155,8 +155,8 @@ export const ThreatsTable = ({
   const activeFiltersCount = [filterWithinJurisdiction, filterActiveOnly].filter(Boolean).length;
 
   return (
-    <TableContainer component={Paper} elevation={0} sx={{ mt: 2, overflow: 'auto' }}>
-      <Table>
+    <TableContainer component={Paper} elevation={0} sx={{ mt: 2 }}>
+      <Table sx={{ minWidth: 650 }}>
         <TableHead>
           {showFilters && (
             <TableRow sx={{ backgroundColor: '#D8E7CC' }}>

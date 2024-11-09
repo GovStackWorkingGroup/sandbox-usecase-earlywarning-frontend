@@ -23,7 +23,7 @@ export function PageLayout({ children }: Readonly<{ children: ReactNode }>) {
         <Sidebar isSidebarOpen={isSidebarOpen} openSidebar={openSidebar} />
         <Box
           component="main"
-          sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2, pt: 0 }}
+          sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2, pt: 0, minWidth: 750 }}
         >
           <Toolbar />
           {children}

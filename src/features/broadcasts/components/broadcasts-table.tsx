@@ -128,7 +128,7 @@ export const BroadcastsTable = ({
 
   return (
     <TableContainer component={Paper} elevation={0} sx={{ mt: 2 }}>
-      <Table>
+      <Table sx={{ minWidth: 650 }}>
         <TableHead>
           {showFilters && (
             <TableRow sx={{ backgroundColor: '#D8E7CC' }}>

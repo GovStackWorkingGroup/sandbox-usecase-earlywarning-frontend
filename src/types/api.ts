@@ -56,6 +56,7 @@ export type Threat = {
 
 export type Broadcast = {
   broadcastId: string;
+  broadcastNumber: number;
   threatId: string;
   title: string;
   status: string;
@@ -87,12 +88,17 @@ export type Dashboard = {
   };
 };
 
+export type UserCountry = {
+  countryId: number;
+  countryName: string;
+};
+
 export type User = {
   firstName: string;
   lastName: string;
   email: string;
   userUUID: string;
-  country: string;
+  country: UserCountry;
 };
 
 export type AuthResponse = {

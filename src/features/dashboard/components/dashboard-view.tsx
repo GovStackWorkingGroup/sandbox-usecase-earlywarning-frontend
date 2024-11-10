@@ -6,12 +6,15 @@ import { Spinner } from '@/components/ui/spinner/spinner';
 import { useBroadcasts } from '@/features/broadcasts/api/get-broadcasts';
 import { useDashboard } from '@/features/dashboard/api/get-dashboard';
 import { ThreatsTable } from '@/features/threats/components/threats-table';
+import { useUser } from '@/lib/auth';
 import { Broadcast } from '@/types/api';
 
 export const DashboardView = () => {
   const [latestBroadcasts, setLatestBroadcasts] = useState<Broadcast[]>([]);
 
-  const dashboardQuery = useDashboard({ country: 'Kenya' }); // FIXME use real country
+  const user = useUser();
+
+  const dashboardQuery = useDashboard({ country: user.data?.country.countryName || 'Kenya' });
 
   const latestsBroadcastsQuery = useBroadcasts({
     active: false,

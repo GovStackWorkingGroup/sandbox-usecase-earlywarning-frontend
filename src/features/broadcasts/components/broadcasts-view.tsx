@@ -61,7 +61,7 @@ export const BroadcastsView = () => {
 
   const pendingBroadcastsQuery = useBroadcasts({
     userId: user.data?.userUUID,
-    country: 'Kenya', // FIXME use real country
+    country: user.data?.country.countryName,
     // status: 'DRAFT', // FIXME there is no drafts in example data
     status: 'PENDING',
     active: false,

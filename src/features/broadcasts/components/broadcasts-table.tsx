@@ -36,7 +36,7 @@ const statusMap: { [key: string]: { label: string; color: string } } = {
   DRAFT: { label: 'Draft', color: '#BCEBED' },
 };
 
-const getSeverityChip = (status: string) => {
+const getStatusChip = (status: string) => {
   const { label, color } = statusMap[status] || { label: 'Unknown', color: 'white' };
 
   return <Chip size="small" label={label} sx={{ backgroundColor: color }} />;
@@ -63,14 +63,14 @@ export const BroadcastsTable = ({
     totalPages: 0,
   });
   const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
-  const [filterMineOnly, setFilterMineOnly] = useState(true);
-  const [filterWithinJurisdiction, setFilterWithinJurisdiction] = useState(true);
-  const [filterActiveOnly, setFilterActiveOnly] = useState(true);
+  const [filterMineOnly, setFilterMineOnly] = useState(false);
+  const [filterWithinJurisdiction, setFilterWithinJurisdiction] = useState(false);
+  const [filterActiveOnly, setFilterActiveOnly] = useState(false);
 
   const user = useUser();
 
   const broadcastsQuery = useBroadcasts({
-    country: filterWithinJurisdiction ? 'Kenya' : undefined, // FIXME use real country
+    country: filterWithinJurisdiction ? user.data?.country.countryName : undefined,
     userId: filterMineOnly ? user.data?.userUUID : undefined,
     active: filterActiveOnly,
     page: page,
@@ -267,41 +267,30 @@ export const BroadcastsTable = ({
                         </Box>
                       </Box>
                       <Box display="flex" justifyContent="flex-start">
-                        {getSeverityChip(row.status)}
+                        {getStatusChip(row.status)}
                       </Box>
                     </Box>
                   </TableCell>
                   <TableCell>
-                    {/*FIXME no languages in request response*/}
                     <Box display="flex" gap={1}>
-                      <Chip
-                        size="small"
-                        variant="outlined"
-                        icon={
-                          <Icon
-                            baseClassName="material-symbols-outlined"
-                            sx={{ '&&': { color: '#426834' } }}
-                          >
-                            language
-                          </Icon>
-                        }
-                        label="English"
-                        sx={{ borderColor: '#73796E' }}
-                      />
-                      <Chip
-                        size="small"
-                        variant="outlined"
-                        icon={
-                          <Icon
-                            baseClassName="material-symbols-outlined"
-                            sx={{ '&&': { color: '#426834' } }}
-                          >
-                            language
-                          </Icon>
-                        }
-                        label="Swahili"
-                        sx={{ borderColor: '#73796E' }}
-                      />
+                      {/*FIXME no languages in request response*/}
+                      {['English', 'Swahili'].map((language) => (
+                        <Chip
+                          key={language}
+                          size="small"
+                          variant="outlined"
+                          icon={
+                            <Icon
+                              baseClassName="material-symbols-outlined"
+                              sx={{ '&&': { color: '#426834' } }}
+                            >
+                              language
+                            </Icon>
+                          }
+                          label={language}
+                          sx={{ borderColor: '#73796E' }}
+                        />
+                      ))}
                     </Box>
                   </TableCell>
                   <TableCell>

@@ -11,7 +11,7 @@ import { attachToken, loginApi } from './api-client';
 
 const getUser = async (): Promise<User> => {
   try {
-    const response = await loginApi.get('/v1/user/me', {
+    const response = await loginApi.get('/v1/users/me', {
       headers: attachToken().headers,
     });
     return response.data;

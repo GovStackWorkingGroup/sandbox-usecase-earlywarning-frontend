@@ -27,6 +27,7 @@ import { Link } from 'react-router-dom';
 
 import { paths } from '@/config/paths';
 import { useThreats } from '@/features/threats/api/get-threats';
+import { useUser } from '@/lib/auth';
 import { Threat } from '@/types/api';
 import { formatPeriod } from '@/utils/format';
 
@@ -88,11 +89,13 @@ export const ThreatsTable = ({
     totalPages: 0,
   });
   const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
-  const [filterWithinJurisdiction, setFilterWithinJurisdiction] = useState(true);
-  const [filterActiveOnly, setFilterActiveOnly] = useState(true);
+  const [filterWithinJurisdiction, setFilterWithinJurisdiction] = useState(false);
+  const [filterActiveOnly, setFilterActiveOnly] = useState(false);
+
+  const user = useUser();
 
   const threatsQuery = useThreats({
-    country: filterWithinJurisdiction ? 'Kenya' : undefined, // FIXME use real country
+    country: filterWithinJurisdiction ? user.data?.country.countryName : undefined, // FIXME use real country
     active: filterActiveOnly,
     page: page,
     size: rowsPerPage,
@@ -306,7 +309,7 @@ export const ThreatsTable = ({
                     <Box display="flex" alignItems="center" sx={{ pt: 0.5 }}>
                       {uniqueCounties.map((county, index) => (
                         <Fragment key={county}>
-                          <Typography fontSize={14} color="#73796E">
+                          <Typography fontSize={14} color="#73796E" whiteSpace="nowrap">
                             {county}
                           </Typography>
                           {index < uniqueCounties.length - 1 && (

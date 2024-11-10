@@ -164,10 +164,7 @@ export const Sidebar = ({ isSidebarOpen, openSidebar }: SidebarProps) => {
                       {item.icon}
                     </Icon>
                   </ListItemIcon>
-                  <ListItemText
-                    primary={item.name}
-                    sx={[isSidebarOpen ? { opacity: 1 } : { opacity: 0 }]}
-                  />
+                  <ListItemText primary={item.name} />
                   <Typography
                     sx={{
                       backgroundColor: '#27D0C7',

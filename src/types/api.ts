@@ -90,7 +90,7 @@ export type Dashboard = {
 
 export type UserCountry = {
   countryId: number;
-  countryName: string;
+  name: string;
 };
 
 export type User = {

@@ -187,7 +187,7 @@ export const ThreatView = ({ threatId }: { threatId: string }) => {
             <Box display="flex" justifyContent="space-between">
               <Box flex={1} pr={1.5} display="flex" flexDirection="column" gap={2}>
                 <Box display="flex" flexDirection="column" gap={1}>
-                  <Typography fontSize={14}>Location</Typography>
+                  <Typography fontSize={14}>Location Within My Jurisdiction</Typography>
                   <Box display="flex" gap={1} alignItems="center">
                     <Icon
                       baseClassName="material-symbols-outlined"
@@ -307,7 +307,7 @@ export const ThreatView = ({ threatId }: { threatId: string }) => {
           <BroadcastsTable showFilters={true} initialRowsPerPage={5} sort="periodStart,desc" />
         </Box>
       </Box>
-      <Box sx={{ pt: 3.5, width: { xs: '100%', md: '100%', lg: 230 } }}>
+      <Box sx={{ pt: threat.active ? 3.5 : 1, width: { xs: '100%', md: '100%', lg: 230 } }}>
         <Typography variant="h5" sx={{ lineHeight: 'normal' }}>
           History
         </Typography>
@@ -335,7 +335,7 @@ export const ThreatView = ({ threatId }: { threatId: string }) => {
                   {item.icon}
                 </Icon>
                 <Box>
-                  <Typography fontSize={12} letterSpacing={1}>
+                  <Typography fontSize={12} letterSpacing={1} noWrap>
                     {item.text.toUpperCase()}
                   </Typography>
                   <Typography fontSize={14} color="#43483F">

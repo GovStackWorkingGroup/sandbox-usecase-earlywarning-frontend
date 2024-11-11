@@ -95,7 +95,7 @@ export const ThreatsTable = ({
   const user = useUser();
 
   const threatsQuery = useThreats({
-    country: filterWithinJurisdiction ? user.data?.country.countryName : undefined, // FIXME use real country
+    country: filterWithinJurisdiction ? user.data?.country.name : undefined,
     active: filterActiveOnly,
     page: page,
     size: rowsPerPage,
@@ -269,34 +269,36 @@ export const ThreatsTable = ({
                   </TableCell>
                   <TableCell>
                     <Box display="flex" alignItems="center">
-                      <Tooltip
-                        arrow
-                        title="My Jurisdiction"
-                        placement="top"
-                        slotProps={{
-                          arrow: {
-                            sx: {
-                              color: '#43483F',
-                            },
-                          },
-                          tooltip: {
-                            sx: {
-                              width: 'auto',
-                              backgroundColor: '#43483F',
-                              color: '#F0F5F5',
-                            },
-                          },
-                        }}
-                      >
-                        <Icon
-                          baseClassName="material-symbols-outlined"
-                          sx={{ color: '#43483F', mr: 0.5, fontSize: 20 }}
-                        >
-                          where_to_vote
-                        </Icon>
-                      </Tooltip>
                       {uniqueCountries.map((country, index) => (
                         <Fragment key={country}>
+                          {country === user.data?.country.name && (
+                            <Tooltip
+                              arrow
+                              title="My Jurisdiction"
+                              placement="top"
+                              slotProps={{
+                                arrow: {
+                                  sx: {
+                                    color: '#43483F',
+                                  },
+                                },
+                                tooltip: {
+                                  sx: {
+                                    width: 'auto',
+                                    backgroundColor: '#43483F',
+                                    color: '#F0F5F5',
+                                  },
+                                },
+                              }}
+                            >
+                              <Icon
+                                baseClassName="material-symbols-outlined"
+                                sx={{ color: '#43483F', mr: 0.5, fontSize: 20 }}
+                              >
+                                where_to_vote
+                              </Icon>
+                            </Tooltip>
+                          )}
                           <Typography fontSize={14} color="#191D16">
                             {country}
                           </Typography>

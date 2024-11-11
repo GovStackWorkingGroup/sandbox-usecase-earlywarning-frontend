@@ -70,7 +70,7 @@ export const BroadcastsTable = ({
   const user = useUser();
 
   const broadcastsQuery = useBroadcasts({
-    country: filterWithinJurisdiction ? user.data?.country.countryName : undefined,
+    country: filterWithinJurisdiction ? user.data?.country.name : undefined,
     userId: filterMineOnly ? user.data?.userUUID : undefined,
     active: filterActiveOnly,
     page: page,
@@ -300,7 +300,7 @@ export const BroadcastsTable = ({
                       <Typography fontSize={14}>SMS</Typography>
                     </Box>
                   </TableCell>
-                  <TableCell>{formatDate(row.periodStart)}</TableCell>
+                  <TableCell>{formatDate(row.initiated)}</TableCell>
                   <TableCell>
                     <IconButton component={Link} to={paths.app.broadcast.getHref(row.broadcastId)}>
                       <Icon baseClassName="material-symbols-outlined" sx={{ color: '#386667' }}>

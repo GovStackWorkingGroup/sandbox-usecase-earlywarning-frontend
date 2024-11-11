@@ -116,11 +116,11 @@ export const BroadcastView = ({ broadcastId }: { broadcastId: string }) => {
   const broadcastQuery = useBroadcast({ broadcastId });
 
   const { data: owner, refetch: fetchOwner } = useUserById({
-    userId: broadcastQuery.data?.createdBy || '',
+    userId: broadcastQuery.data?.createdBy ?? '',
   });
 
   const { data: threat, refetch: fetchThreat } = useThreat({
-    threatId: broadcastQuery.data?.threatId || '',
+    threatId: broadcastQuery.data?.threatId ?? '',
   });
 
   useEffect(() => {
@@ -172,9 +172,9 @@ export const BroadcastView = ({ broadcastId }: { broadcastId: string }) => {
               color="primary"
               sx={{ marginLeft: 'auto' }}
               startIcon={<Icon baseClassName="material-symbols-outlined">chat_add_on</Icon>}
-              onClick={() => console.log('Feedback to ICPAC')}
+              onClick={() => console.log('Feedback to Broadcast')}
             >
-              Feedback to ICPAC
+              Feedback to Broadcast
             </Button>
           )}
         </Box>
@@ -235,7 +235,7 @@ export const BroadcastView = ({ broadcastId }: { broadcastId: string }) => {
 
                   <Box display="flex" flexDirection="column" gap={1}>
                     <Typography fontSize={14}>Broadcast Date (Initiated)</Typography>
-                    {formatDateTime(broadcast.periodStart)}
+                    {formatDateTime(broadcast.initiated)}
                   </Box>
 
                   <Box display="flex" flexDirection="column" gap={1}>
@@ -367,18 +367,20 @@ export const BroadcastView = ({ broadcastId }: { broadcastId: string }) => {
                 </Fragment>
               ))}
             </Box>
-            <Box display="flex" justifyContent="flex-end" sx={{ mt: 2 }}>
-              <Button
-                variant="contained"
-                color="error"
-                onClick={() => console.log('Button clicked')}
-              >
-                Cancel
-              </Button>
-            </Box>
+            {['DRAFT', 'PROCESSING', 'PENDING'].includes(broadcast.status) && (
+              <Box display="flex" justifyContent="flex-end" sx={{ mt: 2 }}>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={() => console.log('Button clicked')}
+                >
+                  Cancel
+                </Button>
+              </Box>
+            )}
           </Box>
         </Box>
-        <Box sx={{ width: { xs: '100%', md: '100%', lg: 260 } }}>
+        <Box sx={{ width: { xs: '100%', md: '100%', lg: 270 } }}>
           <Box
             display="flex"
             flexDirection="column"
@@ -431,20 +433,20 @@ export const BroadcastView = ({ broadcastId }: { broadcastId: string }) => {
                     calendar_today
                   </Icon>
                   {formatPeriod(
-                    threat?.periodStart || new Date().toDateString(),
-                    threat?.periodEnd || new Date().toDateString(),
+                    threat?.periodStart ?? new Date().toDateString(),
+                    threat?.periodEnd ?? new Date().toDateString(),
                   )}
                 </Box>
               </Box>
 
               <Box display="flex" flexDirection="column" gap={1}>
                 <Typography fontSize={14}>Severity</Typography>
-                {getSeverityChip(threat?.severity || '')}
+                {getSeverityChip(threat?.severity ?? '')}
               </Box>
 
               <Box display="flex" flexDirection="column" gap={1}>
                 <Typography fontSize={14}>Alert Type</Typography>
-                {getTypeChip(threat?.type || '')}
+                {getTypeChip(threat?.type ?? '')}
               </Box>
 
               <Box display="flex" justifyContent="flex-end" sx={{ mt: 2 }}>

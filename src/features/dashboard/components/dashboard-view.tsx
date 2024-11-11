@@ -14,7 +14,7 @@ export const DashboardView = () => {
 
   const user = useUser();
 
-  const dashboardQuery = useDashboard({ country: user.data?.country.countryName || 'Kenya' });
+  const dashboardQuery = useDashboard({ country: user.data?.country.name || 'Kenya' });
 
   const latestsBroadcastsQuery = useBroadcasts({
     active: false,

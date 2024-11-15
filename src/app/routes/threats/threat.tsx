@@ -34,10 +34,8 @@ export const ThreatRoute = () => {
   if (!threat) return null;
 
   return (
-    <>
-      <ContentLayout title={`Threat #${threat.threatNumber}`}>
-        <ThreatView threatId={threat.threatId} />
-      </ContentLayout>
-    </>
+    <ContentLayout title={`Threat #${threat.threatNumber}`}>
+      <ThreatView threatId={threat.threatId} />
+    </ContentLayout>
   );
 };

@@ -4,9 +4,9 @@ import { LoaderFunctionArgs, useParams } from 'react-router-dom';
 import { ContentLayout } from '@/components/layouts';
 import { Spinner } from '@/components/ui/spinner/spinner';
 import { getBroadcastQueryOptions, useBroadcast } from '@/features/broadcasts/api/get-broadcast';
-import { BroadcastView } from '@/features/broadcasts/components/broadcast-view';
+import { BroadcastForm } from '@/features/broadcasts/components/broadcast-form';
 
-export const broadcastLoader =
+export const broadcastEditLoader =
   (queryClient: QueryClient) =>
   async ({ params }: LoaderFunctionArgs) => {
     const broadcastId = params.broadcastId as string;
@@ -19,7 +19,7 @@ export const broadcastLoader =
     );
   };
 
-export const BroadcastRoute = () => {
+export const BroadcastEditRoute = () => {
   const params = useParams();
   const broadcastId = params.broadcastId as string;
   const broadcastQuery = useBroadcast({
@@ -36,7 +36,7 @@ export const BroadcastRoute = () => {
 
   return (
     <ContentLayout title={broadcast.title}>
-      <BroadcastView broadcastId={broadcast.broadcastId} />
+      <BroadcastForm broadcastId={broadcast.broadcastId} />
     </ContentLayout>
   );
 };

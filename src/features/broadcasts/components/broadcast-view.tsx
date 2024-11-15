@@ -22,8 +22,8 @@ import { formatDate, formatDateTime, formatPeriod } from '@/utils/format';
 
 const statusMap: { [key: string]: { label: string; color: string } } = {
   SENT: { label: 'Sent', color: '#D8E7CC' },
-  PENDING: { label: 'Pending', color: '#DFE4D7' },
-  PUBLISHED: { label: 'Published', color: '#DFE4D7' },
+  PROCESSING: { label: 'Processing', color: '#DFE4D7' },
+  FAILED: { label: 'Failed', color: '#DFE4D7' },
   DRAFT: { label: 'Draft', color: '#BCEBED' },
 };
 
@@ -112,6 +112,21 @@ const pastBroadcasts = [
   },
 ];
 
+const channelTypeMap: { [key: string]: string } = {
+  EMAIL: 'Email',
+  SMS: 'SMS',
+  WHATSAPP: 'WhatsApp',
+  TELEGRAM: 'Telegram',
+};
+
+const getChannelTypeLabel = (channelType: string): string => {
+  if (!channelType) {
+    return 'Not set';
+  }
+
+  return channelTypeMap[channelType] || 'Unknown';
+};
+
 export const BroadcastView = ({ broadcastId }: { broadcastId: string }) => {
   const broadcastQuery = useBroadcast({ broadcastId });
 
@@ -142,6 +157,11 @@ export const BroadcastView = ({ broadcastId }: { broadcastId: string }) => {
   const broadcast = broadcastQuery?.data;
 
   if (!broadcast) return null;
+
+  const languages = [
+    { message: broadcast.primaryLangMessage, language: 'English' },
+    { message: broadcast.secondaryLangMessage, language: 'Swahili' },
+  ];
 
   const uniqueCountries = Array.from(
     new Set(threat?.affectedCountries.map((country) => country.countryName)),
@@ -240,25 +260,26 @@ export const BroadcastView = ({ broadcastId }: { broadcastId: string }) => {
 
                   <Box display="flex" flexDirection="column" gap={1}>
                     <Typography fontSize={14}>Broadcast Channel</Typography>
-                    SMS {/* FIXME use real channel */}
+                    {getChannelTypeLabel(broadcast.channelType)}
                   </Box>
 
                   <Box display="flex" flexDirection="column" gap={1}>
                     <Typography fontSize={14}>Languages</Typography>
                     <Box display="flex" flexWrap="wrap" gap={0.5}>
-                      {/*FIXME no languages in request response*/}
-                      {['English', 'Swahili'].map((language) => (
-                        <Chip
-                          key={language}
-                          size="small"
-                          sx={{
-                            backgroundColor: '#1B5E20',
-                            color: 'white',
-                            borderColor: '#1B5E20',
-                          }}
-                          label={language}
-                        />
-                      ))}
+                      {languages
+                        .filter(({ message }) => message)
+                        .map(({ language }) => (
+                          <Chip
+                            key={language}
+                            size="small"
+                            sx={{
+                              backgroundColor: '#1B5E20',
+                              color: 'white',
+                              borderColor: '#1B5E20',
+                            }}
+                            label={language}
+                          />
+                        ))}
                     </Box>
                   </Box>
                 </Box>
@@ -334,38 +355,33 @@ export const BroadcastView = ({ broadcastId }: { broadcastId: string }) => {
           >
             <Typography fontWeight={500}>Content</Typography>
             <Box display="flex" flexDirection="column" gap={1.5}>
-              {/*FIXME use real languages*/}
-              {['English', 'Swahili'].map((language) => (
-                <Fragment key={language}>
-                  <Accordion
-                    elevation={0}
-                    square={true}
-                    sx={{
-                      border: '1px solid #C3C8BB',
-                      borderRadius: 2,
-                      '&:before': {
-                        display: 'none',
-                      },
-                    }}
-                    disableGutters
-                  >
-                    <AccordionSummary
-                      expandIcon={
-                        <Icon baseClassName="material-symbols-outlined">keyboard_arrow_down</Icon>
-                      }
-                      aria-controls="panel1-content"
-                      id="panel1-header"
+              {languages
+                .filter(({ message }) => message)
+                .map(({ message, language }) => (
+                  <Fragment key={language}>
+                    <Accordion
+                      elevation={0}
+                      square={true}
+                      sx={{
+                        border: '1px solid #C3C8BB',
+                        borderRadius: 2,
+                        '&:before': {
+                          display: 'none',
+                        },
+                      }}
+                      disableGutters
                     >
-                      {language}
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      {language === 'English'
-                        ? broadcast.primaryLangMessage
-                        : broadcast.secondaryLangMessage}
-                    </AccordionDetails>
-                  </Accordion>
-                </Fragment>
-              ))}
+                      <AccordionSummary
+                        expandIcon={
+                          <Icon baseClassName="material-symbols-outlined">keyboard_arrow_down</Icon>
+                        }
+                      >
+                        {language}
+                      </AccordionSummary>
+                      <AccordionDetails sx={{ whiteSpace: 'pre-wrap' }}>{message}</AccordionDetails>
+                    </Accordion>
+                  </Fragment>
+                ))}
             </Box>
             {['DRAFT', 'PROCESSING', 'PENDING'].includes(broadcast.status) && (
               <Box display="flex" justifyContent="flex-end" sx={{ mt: 2 }}>
@@ -391,7 +407,7 @@ export const BroadcastView = ({ broadcastId }: { broadcastId: string }) => {
             }}
           >
             <Box sx={{ backgroundColor: '#D8E7CC', p: 2 }}>
-              <Typography fontSize={20}>Thread Details</Typography>
+              <Typography fontSize={20}>Threat Details</Typography>
             </Box>
             <Box display="flex" flexDirection="column" gap={1.5} sx={{ p: 2 }}>
               <Box display="flex" flexDirection="column" gap={1}>

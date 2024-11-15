@@ -73,6 +73,19 @@ export const createAppRouter = (queryClient: QueryClient) =>
           ErrorBoundary: AppRootErrorBoundary,
         },
         {
+          path: paths.app.broadcastEdit.path,
+          lazy: async () => {
+            const { BroadcastEditRoute, broadcastEditLoader } = await import(
+              './routes/broadcasts/broadcast-edit'
+            );
+            return {
+              Component: BroadcastEditRoute,
+              loader: broadcastEditLoader(queryClient),
+            };
+          },
+          ErrorBoundary: AppRootErrorBoundary,
+        },
+        {
           path: paths.app.feedbacks.path,
           lazy: async () => {
             const { FeedbacksRoute } = await import('./routes/feedbacks');

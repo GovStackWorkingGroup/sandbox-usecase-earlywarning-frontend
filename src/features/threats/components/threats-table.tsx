@@ -23,9 +23,10 @@ import {
   Typography,
 } from '@mui/material';
 import React, { Fragment, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { paths } from '@/config/paths';
+import { useCreateBroadcast } from '@/features/broadcasts/api/create-broadcast';
 import { useThreats } from '@/features/threats/api/get-threats';
 import { useUser } from '@/lib/auth';
 import { Threat } from '@/types/api';
@@ -93,6 +94,7 @@ export const ThreatsTable = ({
   const [filterActiveOnly, setFilterActiveOnly] = useState(false);
 
   const user = useUser();
+  const navigate = useNavigate();
 
   const threatsQuery = useThreats({
     country: filterWithinJurisdiction ? user.data?.country.name : undefined,
@@ -111,6 +113,14 @@ export const ThreatsTable = ({
       });
     }
   }, [threatsQuery.data]);
+
+  const createBroadcastMutation = useCreateBroadcast({
+    mutationConfig: {
+      onSuccess: (data) => {
+        navigate(paths.app.broadcastEdit.getHref(data.broadcastId));
+      },
+    },
+  });
 
   const filterOpen = Boolean(filterAnchorEl);
 
@@ -326,10 +336,11 @@ export const ThreatsTable = ({
                   <TableCell>0</TableCell>
                   <TableCell>
                     <Box display="flex" gap={1}>
-                      {/*FIXME link to broadcast*/}
                       <IconButton
                         onClick={() => {
-                          console.log('Broadcast');
+                          createBroadcastMutation.mutate({
+                            threatId: row.threatId,
+                          });
                         }}
                       >
                         <Icon baseClassName="material-symbols-outlined" sx={{ color: '#426834' }}>

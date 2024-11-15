@@ -61,6 +61,7 @@ export type Broadcast = {
   title: string;
   status: string;
   notes: string;
+  channelType: string;
   primaryLangMessage: string;
   secondaryLangMessage: string;
   countryId: number;

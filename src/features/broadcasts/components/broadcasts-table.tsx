@@ -10,6 +10,7 @@ import {
   Menu,
   MenuItem,
   Paper,
+  SvgIcon,
   Table,
   TableBody,
   TableCell,
@@ -23,6 +24,8 @@ import {
 import React, { Fragment, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import TelegramIcon from '@/assets/icons/telegram.svg?react';
+import WhatsappIcon from '@/assets/icons/whatsapp.svg?react';
 import { paths } from '@/config/paths';
 import { useBroadcasts } from '@/features/broadcasts/api/get-broadcasts';
 import { useUser } from '@/lib/auth';
@@ -31,8 +34,8 @@ import { formatDate } from '@/utils/format';
 
 const statusMap: { [key: string]: { label: string; color: string } } = {
   SENT: { label: 'Sent', color: '#D8E7CC' },
-  PENDING: { label: 'Pending', color: '#DFE4D7' },
-  PUBLISHED: { label: 'Published', color: '#DFE4D7' },
+  PROCESSING: { label: 'Processing', color: '#DFE4D7' },
+  FAILED: { label: 'Failed', color: '#DFE4D7' },
   DRAFT: { label: 'Draft', color: '#BCEBED' },
 };
 
@@ -40,6 +43,40 @@ const getStatusChip = (status: string) => {
   const { label, color } = statusMap[status] || { label: 'Unknown', color: 'white' };
 
   return <Chip size="small" label={label} sx={{ backgroundColor: color }} />;
+};
+
+const channelTypeMap: { [key: string]: { icon: React.ReactNode; label: string } } = {
+  EMAIL: {
+    icon: <Icon baseClassName="material-symbols-outlined">email</Icon>,
+    label: 'Email',
+  },
+  SMS: {
+    icon: <Icon baseClassName="material-symbols-outlined">sms</Icon>,
+    label: 'SMS',
+  },
+  WHATSAPP: {
+    icon: <SvgIcon component={WhatsappIcon} sx={{ color: 'inherit' }} />,
+    label: 'WhatsApp',
+  },
+  TELEGRAM: {
+    icon: <SvgIcon component={TelegramIcon} sx={{ color: 'inherit' }} />,
+    label: 'Telegram',
+  },
+};
+
+const getChannelTypeLabel = (channelType: string): React.ReactNode => {
+  if (!channelType) {
+    return;
+  }
+
+  const channel = channelTypeMap[channelType] || { icon: null, label: 'Unknown' };
+
+  return (
+    <Box display="flex" alignItems="center" gap={1}>
+      {channel.icon}
+      <Typography fontSize={14}>{channel.label}</Typography>
+    </Box>
+  );
 };
 
 export type BroadcastsTableProps = {
@@ -273,33 +310,31 @@ export const BroadcastsTable = ({
                   </TableCell>
                   <TableCell>
                     <Box display="flex" gap={1}>
-                      {/*FIXME no languages in request response*/}
-                      {['English', 'Swahili'].map((language) => (
-                        <Chip
-                          key={language}
-                          size="small"
-                          variant="outlined"
-                          icon={
-                            <Icon
-                              baseClassName="material-symbols-outlined"
-                              sx={{ '&&': { color: '#426834' } }}
-                            >
-                              language
-                            </Icon>
-                          }
-                          label={language}
-                          sx={{ borderColor: '#73796E' }}
-                        />
-                      ))}
+                      {[
+                        { message: row.primaryLangMessage, language: 'English' },
+                        { message: row.secondaryLangMessage, language: 'Swahili' },
+                      ]
+                        .filter(({ message }) => message)
+                        .map(({ language }) => (
+                          <Chip
+                            key={language}
+                            size="small"
+                            variant="outlined"
+                            icon={
+                              <Icon
+                                baseClassName="material-symbols-outlined"
+                                sx={{ '&&': { color: '#426834' } }}
+                              >
+                                language
+                              </Icon>
+                            }
+                            label={language}
+                            sx={{ borderColor: '#73796E' }}
+                          />
+                        ))}
                     </Box>
                   </TableCell>
-                  <TableCell>
-                    {/*FIXME no channels in request response*/}
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <Icon baseClassName="material-symbols-outlined">sms</Icon>
-                      <Typography fontSize={14}>SMS</Typography>
-                    </Box>
-                  </TableCell>
+                  <TableCell>{getChannelTypeLabel(row.channelType)}</TableCell>
                   <TableCell>{formatDate(row.initiated)}</TableCell>
                   <TableCell>
                     <IconButton component={Link} to={paths.app.broadcast.getHref(row.broadcastId)}>

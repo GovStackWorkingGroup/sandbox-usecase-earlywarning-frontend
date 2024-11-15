@@ -1,11 +1,23 @@
-import { Box, Button, Chip, ChipProps, Divider, Icon, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Chip,
+  ChipProps,
+  CircularProgress,
+  Divider,
+  Icon,
+  Typography,
+} from '@mui/material';
 import React, { Fragment, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import mapExample1 from '@/assets/map-example-1.png';
 import mapExample2 from '@/assets/map-example-2.png';
 import mapExample3 from '@/assets/map-example-3.png';
 import mapExample4 from '@/assets/map-example-4.png';
 import { Spinner } from '@/components/ui/spinner/spinner';
+import { paths } from '@/config/paths';
+import { useCreateBroadcast } from '@/features/broadcasts/api/create-broadcast';
 import { BroadcastsTable } from '@/features/broadcasts/components/broadcasts-table';
 import { useThreat } from '@/features/threats/api/get-threat';
 import { formatPeriod } from '@/utils/format';
@@ -102,6 +114,8 @@ const historyData = [
 ];
 
 export const ThreatView = ({ threatId }: { threatId: string }) => {
+  const navigate = useNavigate();
+
   const threatQuery = useThreat({
     threatId,
   });
@@ -112,6 +126,14 @@ export const ThreatView = ({ threatId }: { threatId: string }) => {
     const randomIndex = Math.floor(Math.random() * mapExamples.length);
     setSelectedMap(mapExamples[randomIndex]);
   }, []);
+
+  const createBroadcastMutation = useCreateBroadcast({
+    mutationConfig: {
+      onSuccess: (data) => {
+        navigate(paths.app.broadcastEdit.getHref(data.broadcastId));
+      },
+    },
+  });
 
   if (threatQuery.isLoading) {
     return <Spinner />;
@@ -299,7 +321,19 @@ export const ThreatView = ({ threatId }: { threatId: string }) => {
             <Button
               variant="contained"
               sx={{ backgroundColor: '#65D243', color: '#042100' }}
-              startIcon={<Icon baseClassName="material-symbols-outlined">add</Icon>}
+              startIcon={
+                createBroadcastMutation.isPending ? (
+                  <CircularProgress size="20px" sx={{ color: 'rgba(0, 0, 0, 0.26)' }} />
+                ) : (
+                  <Icon baseClassName="material-symbols-outlined">add</Icon>
+                )
+              }
+              onClick={() => {
+                createBroadcastMutation.mutate({
+                  threatId,
+                });
+              }}
+              disabled={createBroadcastMutation.isPending}
             >
               Add broadcast
             </Button>

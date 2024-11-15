@@ -83,7 +83,7 @@ export const Sidebar = ({ isSidebarOpen, openSidebar }: SidebarProps) => {
     { name: 'Dashboard', to: paths.app.dashboard.getHref(), icon: 'space_dashboard' },
     { name: 'Threats', to: paths.app.threats.getHref(), icon: 'content_paste', count: 1 }, // TODO: Add items count
     { name: 'Broadcasts', to: paths.app.broadcasts.getHref(), icon: 'broadcast_on_home', count: 4 }, // TODO: Add items count
-    { name: 'Feedbacks', to: paths.app.feedbacks.getHref(), icon: 'chat_bubble', count: 23 }, // TODO: Add items count
+    { name: 'Feedbacks', to: paths.app.feedbacks.getHref(), icon: 'chat_bubble', count: 23, disabled: true }, // TODO: Add items count
     { name: 'Map View', to: paths.app.mapView.getHref(), icon: 'map', disabled: true },
   ].filter(Boolean) as SideNavigationItem[];
 

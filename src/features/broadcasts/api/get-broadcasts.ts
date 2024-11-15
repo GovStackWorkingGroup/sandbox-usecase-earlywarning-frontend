@@ -9,7 +9,7 @@ export const getBroadcasts = (
   status?: string,
   userId?: string,
   active = true,
-  page = 1,
+  page = 0,
   size = 10,
   sort?: string,
 ): Promise<Paged<Broadcast>> => {

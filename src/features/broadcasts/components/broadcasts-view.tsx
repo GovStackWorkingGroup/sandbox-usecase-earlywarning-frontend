@@ -1,7 +1,9 @@
 import { Box, Button, Chip, ChipProps, Divider, Icon, Typography } from '@mui/material';
 import React, { Fragment, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Container from '@/components/ui/container/container';
+import { paths } from '@/config/paths';
 import { useBroadcasts } from '@/features/broadcasts/api/get-broadcasts';
 import { BroadcastsTable } from '@/features/broadcasts/components/broadcasts-table';
 import { useUser } from '@/lib/auth';
@@ -58,19 +60,20 @@ export const BroadcastsView = () => {
   const [pendingBroadcasts, setPendingBroadcasts] = useState<Broadcast[]>([]);
 
   const user = useUser();
+  const navigate = useNavigate();
 
   const pendingBroadcastsQuery = useBroadcasts({
     userId: user.data?.userUUID,
     country: user.data?.country.name,
-    // status: 'DRAFT', // FIXME there is no drafts in example data
-    status: 'PENDING',
+    status: 'DRAFT',
     active: false,
-    size: 3,
+    size: 5,
     sort: 'periodStart,desc',
   });
 
   useEffect(() => {
     if (pendingBroadcastsQuery.data) {
+      console.log('pendingBroadcastsQuery', pendingBroadcastsQuery.data.content);
       setPendingBroadcasts(pendingBroadcastsQuery.data.content);
     }
   }, [pendingBroadcastsQuery.data]);
@@ -128,12 +131,14 @@ export const BroadcastsView = () => {
                       </Box>
                     </Box>
                     <Box display="flex" justifyContent="space-between" alignItems="center">
-                      <Chip label="Draft" size="small" sx={{ backgroundColor: '#BCEBED' }} /> {/*FIXME use real status when example draft has good data*/}
+                      <Chip label="Draft" size="small" sx={{ backgroundColor: '#BCEBED' }} />
                       <Button
                         variant="outlined"
                         size="small"
                         sx={{ px: 3 }}
-                        onClick={() => console.log('Continue clicked')}
+                        onClick={() =>
+                          navigate(paths.app.broadcastEdit.getHref(pendingBroadcast.broadcastId))
+                        }
                       >
                         Continue
                       </Button>

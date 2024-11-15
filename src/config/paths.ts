@@ -31,6 +31,10 @@ export const paths = {
       path: 'broadcasts/:broadcastId',
       getHref: (id: string) => `/broadcasts/${id}`,
     },
+    broadcastEdit: {
+      path: 'broadcasts/:broadcastId/edit',
+      getHref: (id: string) => `/broadcasts/${id}/edit`,
+    },
     feedbacks: {
       path: 'feedbacks',
       getHref: () => '/feedbacks',

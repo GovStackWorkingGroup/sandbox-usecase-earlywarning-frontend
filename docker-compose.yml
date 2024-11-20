@@ -1,0 +1,9 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        VITE_APP_USER_API_URL: http://localhost:8080/api
+        VITE_APP_THREAT_API_URL: http://localhost:8081/api
+    ports:
+      - '3000:3000'

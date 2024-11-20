@@ -1,22 +1,17 @@
-FROM node:lts-alpine3.18 AS builder
-
+FROM node:22-alpine AS build-stage
 WORKDIR /app
-
+COPY package.json yarn.lock ./
+RUN yarn install
 COPY . .
-COPY .env.example .env
+ARG VITE_APP_USER_API_URL
+ARG VITE_APP_THREAT_API_URL
+ENV VITE_APP_USER_API_URL $VITE_APP_USER_API_URL
+ENV VITE_APP_USER_API_URL $VITE_APP_USER_API_URL
+RUN yarn build
 
-RUN yarn install && yarn build
-
-FROM nginx:alpine
-
-WORKDIR /usr/share/nginx/html
-
-RUN rm -rf ./*
-
-COPY --from=builder /app/dist .
-
-RUN rm -rf /etc/nginx/conf.d/default.conf
-
-COPY default.conf /etc/nginx/conf.d
-
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+FROM busybox:1.37
+RUN adduser -D static
+USER static
+WORKDIR /home/static
+COPY --from=build-stage /app/dist .
+CMD ["busybox", "httpd", "-f", "-v", "-p", "3000"]

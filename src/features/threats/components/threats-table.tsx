@@ -28,6 +28,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { paths } from '@/config/paths';
 import { useCreateBroadcast } from '@/features/broadcasts/api/create-broadcast';
 import { useThreats } from '@/features/threats/api/get-threats';
+import { useLogViewer } from '@/hooks/log-viewer-provider';
 import { useUser } from '@/lib/auth';
 import { Threat } from '@/types/api';
 import { formatPeriod } from '@/utils/format';
@@ -95,6 +96,7 @@ export const ThreatsTable = ({
 
   const user = useUser();
   const navigate = useNavigate();
+  const { isLogViewerOpen, toggleLogViewer } = useLogViewer();
 
   const threatsQuery = useThreats({
     country: filterWithinJurisdiction ? user.data?.country.name : undefined,
@@ -117,6 +119,9 @@ export const ThreatsTable = ({
   const createBroadcastMutation = useCreateBroadcast({
     mutationConfig: {
       onSuccess: (data) => {
+        if (!isLogViewerOpen) {
+          toggleLogViewer();
+        }
         navigate(paths.app.broadcastEdit.getHref(data.broadcastId));
       },
     },

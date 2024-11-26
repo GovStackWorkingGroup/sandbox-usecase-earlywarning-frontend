@@ -6,11 +6,12 @@ import { Header } from '@/components/layouts/page/header';
 import { Sidebar } from '@/components/layouts/page/sidebar';
 import { SidebarLogViewer } from '@/components/layouts/page/sidebar-log-viewer';
 import { logViewerWidth } from '@/config/theme';
-import { useDrawer } from '@/hooks/use-drawer';
+import { useLogViewer } from '@/hooks/log-viewer-provider';
+import { useSidebar } from '@/hooks/use-sidebar';
 
 export function PageLayout({ children }: Readonly<{ children: ReactNode }>) {
-  const { isOpen: isSidebarOpen, open: openSidebar, toggle: toggleSidebar } = useDrawer(true);
-  const { isOpen: isLogViewerOpen, toggle: toggleLogViewer } = useDrawer(false);
+  const { isSidebarOpen, openSidebar, toggleSidebar } = useSidebar(true);
+  const { isLogViewerOpen, toggleLogViewer } = useLogViewer();
 
   const theme = useTheme();
 

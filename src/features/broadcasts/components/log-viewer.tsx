@@ -17,9 +17,8 @@ type LogViewerProps = {
 export const LogViewer = ({ toggleLogViewer }: LogViewerProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [broadcastId, setBroadcastId] = useState<string>('');
+  const [broadcastId, setBroadcastId] = useState<string>();
   const [finalLog, setFinalLog] = useState<Log>();
-  const [isPublishPage, setIsPublishPage] = useState<boolean>(false);
 
   const { data: threatsData, isLoading } = useThreats({
     active: true,
@@ -48,23 +47,51 @@ export const LogViewer = ({ toggleLogViewer }: LogViewerProps) => {
     }
   };
 
+  const isValidId = (pathPart: string) => {
+    return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
+      pathPart,
+    );
+  };
+
   useEffect(() => {
-    const pathParts = location.pathname.split('/').filter(Boolean);
-    const isValidUUID =
-      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
-        pathParts[1],
+    const isValidBroadcastLocation = () => {
+      const pathParts = location.pathname.split('/').filter(Boolean);
+
+      if (pathParts.length === 2 && pathParts[0] === 'broadcasts' && isValidId(pathParts[1])) {
+        return pathParts[1];
+      }
+
+      return null;
+    };
+
+    const isValidPreviousPage = () => {
+      const previousLocationPathname = location.state?.previousLocation;
+
+      if (!previousLocationPathname) {
+        return false;
+      }
+
+      const pathParts = previousLocationPathname.pathname.split('/').filter(Boolean);
+
+      return (
+        pathParts.length === 3 &&
+        pathParts[0] === 'broadcasts' &&
+        isValidId(pathParts[1]) &&
+        pathParts[2] === 'edit'
       );
+    };
 
-    const isPublishPage = pathParts[0] === 'broadcasts' && isValidUUID && pathParts.length === 2;
+    const validBroadcastLocation = isValidBroadcastLocation();
 
-    setIsPublishPage(isPublishPage);
-    if (isPublishPage) {
-      setBroadcastId(pathParts[1]);
+    if (validBroadcastLocation && isValidPreviousPage()) {
+      setBroadcastId(validBroadcastLocation);
+    } else {
+      setBroadcastId(undefined);
     }
   }, [location]);
 
   const getStatusMessage = () => {
-    if (broadcastId === '' || !isPublishPage) {
+    if (!broadcastId) {
       return "Broadcast is not initiated!<br />User hasn't received a message yet.";
     }
     if (!finalLog) {
@@ -118,7 +145,7 @@ export const LogViewer = ({ toggleLogViewer }: LogViewerProps) => {
           overflowX: 'hidden',
         }}
       >
-        {isPublishPage ? (
+        {broadcastId ? (
           <LogsView broadcastId={broadcastId} setFinalLog={setFinalLog} />
         ) : (
           <Box

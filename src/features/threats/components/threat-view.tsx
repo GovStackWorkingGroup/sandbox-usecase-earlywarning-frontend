@@ -20,6 +20,7 @@ import { paths } from '@/config/paths';
 import { useCreateBroadcast } from '@/features/broadcasts/api/create-broadcast';
 import { BroadcastsTable } from '@/features/broadcasts/components/broadcasts-table';
 import { useThreat } from '@/features/threats/api/get-threat';
+import { useLogViewer } from '@/hooks/log-viewer-provider';
 import { formatPeriod } from '@/utils/format';
 
 const mapExamples = [mapExample1, mapExample2, mapExample3, mapExample4];
@@ -115,6 +116,7 @@ const historyData = [
 
 export const ThreatView = ({ threatId }: { threatId: string }) => {
   const navigate = useNavigate();
+  const { isLogViewerOpen, toggleLogViewer } = useLogViewer();
 
   const threatQuery = useThreat({
     threatId,
@@ -130,6 +132,9 @@ export const ThreatView = ({ threatId }: { threatId: string }) => {
   const createBroadcastMutation = useCreateBroadcast({
     mutationConfig: {
       onSuccess: (data) => {
+        if (!isLogViewerOpen) {
+          toggleLogViewer();
+        }
         navigate(paths.app.broadcastEdit.getHref(data.broadcastId));
       },
     },

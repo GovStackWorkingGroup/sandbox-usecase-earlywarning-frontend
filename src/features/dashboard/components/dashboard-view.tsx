@@ -1,11 +1,16 @@
 import { Box, Divider, Grid2 as Grid, Typography } from '@mui/material';
 import React, { Fragment, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Container from '@/components/ui/container/container';
 import { Spinner } from '@/components/ui/spinner/spinner';
+import { paths } from '@/config/paths';
+import { useCreateBroadcast } from '@/features/broadcasts/api/create-broadcast';
 import { useBroadcasts } from '@/features/broadcasts/api/get-broadcasts';
 import { useDashboard } from '@/features/dashboard/api/get-dashboard';
+import { useThreats } from '@/features/threats/api/get-threats';
 import { ThreatsTable } from '@/features/threats/components/threats-table';
+import { useLogViewer } from '@/hooks/log-viewer-provider';
 import { useUser } from '@/lib/auth';
 import { Broadcast } from '@/types/api';
 
@@ -13,14 +18,46 @@ export const DashboardView = () => {
   const [latestBroadcasts, setLatestBroadcasts] = useState<Broadcast[]>([]);
 
   const user = useUser();
+  const navigate = useNavigate();
+  const { isLogViewerOpen, toggleLogViewer } = useLogViewer();
 
-  const dashboardQuery = useDashboard({ country: user.data?.country.name || 'Kenya' });
+  const dashboardQuery = useDashboard({ country: user.data?.country.name ?? 'Kenya' });
 
   const latestsBroadcastsQuery = useBroadcasts({
     active: false,
     size: 5,
     sort: 'createdAt,desc',
   });
+
+  const { data: threatsData, isLoading } = useThreats({
+    active: true,
+    page: 1,
+    size: 1,
+    sort: 'createdAt,desc',
+  });
+
+  const createBroadcastMutation = useCreateBroadcast({
+    mutationConfig: {
+      onSuccess: (data) => {
+        if (!isLogViewerOpen) {
+          toggleLogViewer();
+        }
+        navigate(paths.app.broadcastEdit.getHref(data.broadcastId));
+      },
+    },
+  });
+
+  const handleBroadcastingPageClick = async () => {
+    if (!isLoading && threatsData && threatsData.content.length > 0) {
+      const threatId = threatsData.content[0]?.threatId;
+
+      if (threatId) {
+        createBroadcastMutation.mutate({ threatId });
+      } else {
+        console.error('Threat ID not available');
+      }
+    }
+  };
 
   useEffect(() => {
     if (latestsBroadcastsQuery.data) {
@@ -141,9 +178,7 @@ export const DashboardView = () => {
                 sx={{ backgroundColor: '#C3EFAD', height: '100%' }}
                 button={{
                   text: 'Create new',
-                  action: () => {
-                    console.log('Create broadcast');
-                  },
+                  action: handleBroadcastingPageClick,
                 }}
               >
                 <Typography color="#43483F" fontSize={14} sx={{ minHeight: 42 }}>

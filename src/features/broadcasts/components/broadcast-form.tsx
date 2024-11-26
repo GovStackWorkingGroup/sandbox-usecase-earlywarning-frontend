@@ -30,7 +30,7 @@ import {
 import { enqueueSnackbar } from 'notistack';
 import React, { Fragment, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import TelegramIcon from '@/assets/icons/telegram.svg?react';
 import WhatsappIcon from '@/assets/icons/whatsapp.svg?react';
@@ -185,6 +185,7 @@ const languages = [
 const steps = ['Configuration', 'Content Creation', 'Preview'];
 
 export const BroadcastForm = ({ broadcastId }: { broadcastId: string }) => {
+  const location = useLocation();
   const [activeStep, setActiveStep] = useState(0);
   const [selectedLanguages, setSelectedLanguages] = useState<
     { label: string; disabled: boolean }[]
@@ -270,7 +271,9 @@ export const BroadcastForm = ({ broadcastId }: { broadcastId: string }) => {
     mutationConfig: {
       onSuccess: () => {
         enqueueSnackbar('Broadcast updated successfully', { variant: 'success' });
-        navigate(paths.app.broadcast.getHref(broadcastId));
+        navigate(paths.app.broadcast.getHref(broadcastId), {
+          state: { previousLocation: location },
+        });
       },
       onError: () => {
         enqueueSnackbar('Error updating broadcast', { variant: 'error' });

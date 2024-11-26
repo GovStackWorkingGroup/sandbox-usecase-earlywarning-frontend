@@ -10,11 +10,13 @@ import {
   MenuItem,
   Toolbar,
   Typography,
+  useTheme,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useNavigation } from 'react-router-dom';
 
 import { paths } from '@/config/paths';
+import { logViewerWidth } from '@/config/theme';
 import { useLogout, useUser } from '@/lib/auth';
 
 const Progress = () => {
@@ -61,7 +63,7 @@ const Progress = () => {
 const Logo = () => {
   return (
     <Link to={paths.app.dashboard.getHref()} style={{ textDecoration: 'none' }}>
-      <Typography sx={{ fontSize: '24px', fontWeight: 300 }}>Early warning</Typography>
+      <Typography sx={{ fontSize: '24px', fontWeight: 300 }}>GovStack Early Warning</Typography>
     </Link>
   );
 };
@@ -69,9 +71,10 @@ const Logo = () => {
 type HeaderProps = {
   isSidebarOpen: boolean;
   toggleSidebar: () => void;
+  isLogViewerOpen: boolean;
 };
 
-export const Header = ({ isSidebarOpen, toggleSidebar }: HeaderProps) => {
+export const Header = ({ isSidebarOpen, toggleSidebar, isLogViewerOpen }: HeaderProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const userMenuOpen = Boolean(anchorEl);
@@ -82,12 +85,26 @@ export const Header = ({ isSidebarOpen, toggleSidebar }: HeaderProps) => {
     setAnchorEl(null);
   };
 
+  const theme = useTheme();
   const user = useUser();
   const logout = useLogout();
   const navigate = useNavigate();
 
   return (
-    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    <AppBar
+      position="fixed"
+      sx={{
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+        width: isLogViewerOpen ? `calc(100% - ${logViewerWidth}px)` : '100%',
+        left: 0,
+        transition: theme.transitions.create('width', {
+          easing: theme.transitions.easing.sharp,
+          duration: isLogViewerOpen
+            ? theme.transitions.duration.enteringScreen
+            : theme.transitions.duration.leavingScreen,
+        }),
+      }}
+    >
       <Toolbar sx={{ px: 2, gap: 2 }} disableGutters>
         <Progress />
 

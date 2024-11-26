@@ -70,7 +70,7 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
                 ml: 0.5,
               }}
             >
-              Early Warning System
+              GovStack Early Warning System
             </Typography>
           </Grid2>
         )}

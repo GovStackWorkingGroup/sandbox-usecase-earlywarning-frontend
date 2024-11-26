@@ -12,7 +12,7 @@ export const publishBroadcast = ({
   userId: string;
 }) => {
   return threatApi.post(
-    `/v1/broadcasts/${broadcastId}/publish`,
+    `/api/v1/broadcasts/${broadcastId}/publish`,
     {},
     {
       params: { userId },

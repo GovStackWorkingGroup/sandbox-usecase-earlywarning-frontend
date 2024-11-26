@@ -73,7 +73,6 @@ export const BroadcastsView = () => {
 
   useEffect(() => {
     if (pendingBroadcastsQuery.data) {
-      console.log('pendingBroadcastsQuery', pendingBroadcastsQuery.data.content);
       setPendingBroadcasts(pendingBroadcastsQuery.data.content);
     }
   }, [pendingBroadcastsQuery.data]);

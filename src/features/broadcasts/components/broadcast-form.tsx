@@ -39,7 +39,7 @@ import { paths } from '@/config/paths';
 import { useDeleteBroadcast } from '@/features/broadcasts/api/delete-broadcast';
 import { useBroadcast } from '@/features/broadcasts/api/get-broadcast';
 import { usePublishBroadcast } from '@/features/broadcasts/api/publish-broadcast';
-import { useUpdateDiscussion } from '@/features/broadcasts/api/update-broadcast';
+import { useUpdateBroadcast } from '@/features/broadcasts/api/update-broadcast';
 import { useThreat } from '@/features/threats/api/get-threat';
 import { useUser } from '@/lib/auth';
 import { Broadcast } from '@/types/api';
@@ -160,7 +160,7 @@ const channels = [
     icon: <SvgIcon component={TelegramIcon} sx={{ color: 'inherit' }} inheritViewBox />,
     label: 'Telegram',
     value: 'TELEGRAM',
-    disabled: false,
+    disabled: true,
   },
 ];
 
@@ -229,25 +229,35 @@ export const BroadcastForm = ({ broadcastId }: { broadcastId: string }) => {
         secondaryLangMessage: broadcastQuery.data.secondaryLangMessage,
       });
 
-      const newSelectedLanguages = [];
-      if (broadcastQuery.data.primaryLangMessage) {
-        newSelectedLanguages.push({ label: 'English', disabled: false });
+      if (selectedLanguages.length === 0) {
+        const newSelectedLanguages = [];
+        if (broadcastQuery.data.primaryLangMessage) {
+          newSelectedLanguages.push({ label: 'English', disabled: false });
+        }
+        if (broadcastQuery.data.secondaryLangMessage) {
+          newSelectedLanguages.push({ label: 'Swahili', disabled: false });
+        }
+        if (newSelectedLanguages.length === 0) {
+          newSelectedLanguages.push({ label: 'English', disabled: false });
+          newSelectedLanguages.push({ label: 'Swahili', disabled: false });
+        }
+        setSelectedLanguages(newSelectedLanguages);
       }
-      if (broadcastQuery.data.secondaryLangMessage) {
-        newSelectedLanguages.push({ label: 'Swahili', disabled: false });
-      }
-      if (newSelectedLanguages.length === 0) {
-        newSelectedLanguages.push({ label: 'English', disabled: false });
-        newSelectedLanguages.push({ label: 'Swahili', disabled: false });
-      }
-      setSelectedLanguages(newSelectedLanguages);
     }
   }, [broadcastQuery.data, reset]);
 
-  const { mutate: updateDiscussion, isPending: isUpdateDiscussionPending } = useUpdateDiscussion({
+  useEffect(() => {
+    const availableChannels = channels.filter((channel) => !channel.disabled);
+    if (availableChannels.length === 1) {
+      setValue('channelType', availableChannels[0].value);
+    }
+  }, [setValue]);
+
+  const { mutate: updateBroadcast, isPending: isUpdateBroadcastPending } = useUpdateBroadcast({
     mutationConfig: {
       onSuccess: () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       onError: () => {
         enqueueSnackbar('Error updating broadcast', { variant: 'error' });
@@ -255,7 +265,7 @@ export const BroadcastForm = ({ broadcastId }: { broadcastId: string }) => {
     },
   });
 
-  const { mutate: publishDiscussion, isPending: isPublishDiscussionPending } = usePublishBroadcast({
+  const { mutate: publishBroadcast, isPending: isPublishBroadcastPending } = usePublishBroadcast({
     broadcastId,
     mutationConfig: {
       onSuccess: () => {
@@ -268,7 +278,7 @@ export const BroadcastForm = ({ broadcastId }: { broadcastId: string }) => {
     },
   });
 
-  const deleteDiscussionMutation = useDeleteBroadcast({
+  const deleteBroadcastMutation = useDeleteBroadcast({
     mutationConfig: {
       onSuccess: () => {
         enqueueSnackbar('Broadcast deleted successfully', { variant: 'success' });
@@ -301,7 +311,7 @@ export const BroadcastForm = ({ broadcastId }: { broadcastId: string }) => {
   );
 
   const onSubmit = () => {
-    publishDiscussion({ broadcastId, userId: user.data?.userUUID || '' });
+    publishBroadcast({ broadcastId, userId: user.data?.userUUID ?? '' });
   };
 
   const handleNext = () => {
@@ -374,7 +384,7 @@ export const BroadcastForm = ({ broadcastId }: { broadcastId: string }) => {
         };
       }
 
-      updateDiscussion({ data: { ...broadcast, ...newData }, broadcastId });
+      updateBroadcast({ data: { ...broadcast, ...newData }, broadcastId });
     }
   };
 
@@ -390,7 +400,6 @@ export const BroadcastForm = ({ broadcastId }: { broadcastId: string }) => {
   };
 
   const handleLanguageChange = (event: any, value: { label: string; disabled: boolean }[]) => {
-    console.log('value', value);
     setSelectedLanguages(value);
     if (value.length > 0) {
       setLanguageError(false);
@@ -413,7 +422,7 @@ export const BroadcastForm = ({ broadcastId }: { broadcastId: string }) => {
   };
 
   const handleConfirmDialogDelete = () => {
-    deleteDiscussionMutation.mutate({ broadcastId });
+    deleteBroadcastMutation.mutate({ broadcastId });
     setConfirmDialogOpen(false);
   };
 
@@ -562,7 +571,10 @@ export const BroadcastForm = ({ broadcastId }: { broadcastId: string }) => {
                     multiple
                     options={languages}
                     getOptionLabel={(option) => option.label}
-                    getOptionDisabled={(option) => option.disabled}
+                    getOptionDisabled={(option) =>
+                      selectedLanguages.some((lang) => lang.label === option.label) ||
+                      option.disabled
+                    }
                     value={selectedLanguages}
                     filterSelectedOptions
                     disableCloseOnSelect
@@ -1003,7 +1015,7 @@ export const BroadcastForm = ({ broadcastId }: { broadcastId: string }) => {
               disableElevation
               variant="contained"
               onClick={activeStep === steps.length - 1 ? handleSubmit(onSubmit) : handleNext}
-              disabled={isUpdateDiscussionPending || isPublishDiscussionPending}
+              disabled={isUpdateBroadcastPending || isPublishBroadcastPending}
               sx={{
                 backgroundColor: '#65D243',
                 color: '#191D16',

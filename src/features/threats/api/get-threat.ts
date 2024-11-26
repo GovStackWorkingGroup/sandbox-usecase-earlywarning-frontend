@@ -5,7 +5,7 @@ import { QueryConfig } from '@/lib/react-query';
 import { Threat } from '@/types/api';
 
 export const getThreat = ({ threatId }: { threatId: string }): Promise<Threat> => {
-  return threatApi.get(`/v1/threats/${threatId}`, {
+  return threatApi.get(`/api/v1/threats/${threatId}`, {
     headers: attachToken().headers,
   });
 };

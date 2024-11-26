@@ -105,3 +105,13 @@ export type User = {
 export type AuthResponse = {
   id_token: string;
 };
+
+export type Log = {
+  id: number;
+  sender: string;
+  receiver: string;
+  content: string;
+  processed: boolean;
+  broadcast: string;
+  timestamp: string;
+};

@@ -306,7 +306,7 @@ export const ThreatView = ({ threatId }: { threatId: string }) => {
               <Button
                 variant="outlined"
                 startIcon={<Icon baseClassName="material-symbols-outlined">edit</Icon>}
-                onClick={() => console.log('Button 2 clicked')}
+                onClick={() => console.log('Edit note')}
               >
                 Edit note
               </Button>

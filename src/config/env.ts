@@ -4,6 +4,7 @@ const createEnv = () => {
   const EnvSchema = z.object({
     USER_API_URL: z.string(),
     THREAT_API_URL: z.string(),
+    LOG_API_URL: z.string(),
     APP_URL: z.string().optional().default('http://localhost:3000'),
   });
 

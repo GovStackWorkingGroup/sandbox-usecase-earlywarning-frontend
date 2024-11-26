@@ -11,7 +11,7 @@ import { attachToken, loginApi } from './api-client';
 
 const getUser = async (): Promise<User> => {
   try {
-    const response = await loginApi.get('/v1/users/me', {
+    const response = await loginApi.get('/api/v1/users/me', {
       headers: attachToken().headers,
     });
     return response.data;
@@ -44,7 +44,7 @@ export const loginInputSchema = z.object({
 export type LoginInput = z.infer<typeof loginInputSchema>;
 const loginWithEmailAndPassword = async (data: LoginInput): Promise<User> => {
   try {
-    const response = await loginApi.post<AuthResponse>('/v1/auth/login', null, {
+    const response = await loginApi.post<AuthResponse>('/api/v1/auth/login', null, {
       params: data,
     });
     localStorage.setItem('accessToken', response.data.id_token);

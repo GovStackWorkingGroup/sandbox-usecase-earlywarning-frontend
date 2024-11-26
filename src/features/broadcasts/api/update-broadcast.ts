@@ -7,27 +7,27 @@ import { Broadcast } from '@/types/api';
 
 import { getBroadcastQueryOptions } from './get-broadcast';
 
-export const updateDiscussionInputSchema = z.object({
+export const updateBoradcastInputSchema = z.object({
   title: z.string().min(1, 'Required'),
 });
 
-export type UpdateDiscussionInput = z.infer<typeof updateDiscussionInputSchema>;
+export type UpdateBroadcastInput = z.infer<typeof updateBoradcastInputSchema>;
 
-export const updateDiscussion = ({
+export const updateBroadcast = ({
   data,
   broadcastId,
 }: {
-  data: UpdateDiscussionInput;
+  data: UpdateBroadcastInput;
   broadcastId: string;
 }): Promise<Broadcast> => {
-  return threatApi.put(`/v1/broadcasts/${broadcastId}`, data);
+  return threatApi.put(`/api/v1/broadcasts/${broadcastId}`, data);
 };
 
 type UseUpdateBroadcastOptions = {
-  mutationConfig?: MutationConfig<typeof updateDiscussion>;
+  mutationConfig?: MutationConfig<typeof updateBroadcast>;
 };
 
-export const useUpdateDiscussion = ({ mutationConfig }: UseUpdateBroadcastOptions = {}) => {
+export const useUpdateBroadcast = ({ mutationConfig }: UseUpdateBroadcastOptions = {}) => {
   const queryClient = useQueryClient();
 
   const { onSuccess, ...restConfig } = mutationConfig || {};
@@ -40,6 +40,6 @@ export const useUpdateDiscussion = ({ mutationConfig }: UseUpdateBroadcastOption
       onSuccess?.(data, ...args);
     },
     ...restConfig,
-    mutationFn: updateDiscussion,
+    mutationFn: updateBroadcast,
   });
 };

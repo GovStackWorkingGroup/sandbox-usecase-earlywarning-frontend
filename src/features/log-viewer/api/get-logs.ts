@@ -44,7 +44,7 @@ export const useLog = ({ broadcastId, setFinalLog }: UseLogOptions) => {
         log.receiver = 'Final';
         log.sender = 'Final';
       }
-      if (!log.sender && !log.receiver) {
+      if (log.receiver === 'mobile') {
         setFinalLog(log);
       } else {
         setLogs((prevLogs) => [...prevLogs, log]);

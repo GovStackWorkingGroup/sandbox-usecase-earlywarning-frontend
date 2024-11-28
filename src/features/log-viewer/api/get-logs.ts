@@ -39,13 +39,17 @@ export const useLog = ({ broadcastId, setFinalLog }: UseLogOptions) => {
   const [logs, setLogs] = useState<Log[]>([initialLog]);
 
   useEffect(() => {
-    const eventSource = getLog(broadcastId, (log) => {
+    let eventSource: EventSource | null = null;
+    eventSource = getLog(broadcastId, (log) => {
       if (log.content === 'Broadcast sent') {
         log.receiver = 'Final';
         log.sender = 'Final';
       }
       if (log.receiver === 'mobile') {
         setFinalLog(log);
+        //Close and invalidate once the last message is processed
+        eventSource?.close();
+        eventSource = null;
       } else {
         setLogs((prevLogs) => [...prevLogs, log]);
       }

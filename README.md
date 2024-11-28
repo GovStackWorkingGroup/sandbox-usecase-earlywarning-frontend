@@ -1,5 +1,5 @@
-# sandbox-usecase-earlywarning-frontend
-Frontend of the Early Warning Prototype
+# Sandbox use case - Early Warning
+# Frontend of the Early Warning Prototype
 
 ```bash
 cp .env.example .env
@@ -13,4 +13,4 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ##### `yarn build`
 
-Builds the project for production and saves the result in the `dist` folder.\
+Builds the project for production and saves the result in the `dist` folder.

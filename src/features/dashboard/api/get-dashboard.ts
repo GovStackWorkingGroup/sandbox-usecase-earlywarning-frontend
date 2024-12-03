@@ -9,7 +9,7 @@ export const getDashboard = (country: string): Promise<Dashboard> => {
     country,
   };
 
-  return threatApi.get(`/v1/overview`, {
+  return threatApi.get(`/api/v1/overview`, {
     params,
     headers: attachToken().headers,
   });

@@ -2,6 +2,8 @@ import { createTheme } from '@mui/material';
 
 const TOOLBAR_HEIGHT = 48;
 
+export const logViewerWidth = 368;
+
 export const defaultTheme = createTheme({
   breakpoints: {
     values: {

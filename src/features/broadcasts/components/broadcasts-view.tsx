@@ -4,8 +4,11 @@ import { useNavigate } from 'react-router-dom';
 
 import Container from '@/components/ui/container/container';
 import { paths } from '@/config/paths';
+import { useCreateBroadcast } from '@/features/broadcasts/api/create-broadcast';
 import { useBroadcasts } from '@/features/broadcasts/api/get-broadcasts';
 import { BroadcastsTable } from '@/features/broadcasts/components/broadcasts-table';
+import { useThreats } from '@/features/threats/api/get-threats';
+import { useLogViewer } from '@/hooks/log-viewer-provider';
 import { useUser } from '@/lib/auth';
 import { Broadcast } from '@/types/api';
 import { formatPeriod } from '@/utils/format';
@@ -61,6 +64,7 @@ export const BroadcastsView = () => {
 
   const user = useUser();
   const navigate = useNavigate();
+  const { isLogViewerOpen, toggleLogViewer } = useLogViewer();
 
   const pendingBroadcastsQuery = useBroadcasts({
     userId: user.data?.userUUID,
@@ -73,10 +77,39 @@ export const BroadcastsView = () => {
 
   useEffect(() => {
     if (pendingBroadcastsQuery.data) {
-      console.log('pendingBroadcastsQuery', pendingBroadcastsQuery.data.content);
       setPendingBroadcasts(pendingBroadcastsQuery.data.content);
     }
   }, [pendingBroadcastsQuery.data]);
+
+  const { data: threatsData, isLoading } = useThreats({
+    active: true,
+    page: 1,
+    size: 1,
+    sort: 'createdAt,desc',
+  });
+
+  const createBroadcastMutation = useCreateBroadcast({
+    mutationConfig: {
+      onSuccess: (data) => {
+        if (!isLogViewerOpen) {
+          toggleLogViewer();
+        }
+        navigate(paths.app.broadcastEdit.getHref(data.broadcastId));
+      },
+    },
+  });
+
+  const handleBroadcastingPageClick = async () => {
+    if (!isLoading && threatsData && threatsData.content.length > 0) {
+      const threatId = threatsData.content[0]?.threatId;
+
+      if (threatId) {
+        createBroadcastMutation.mutate({ threatId });
+      } else {
+        console.error('Threat ID not available');
+      }
+    }
+  };
 
   return (
     <Box display="flex" flexDirection="column" gap={4.5}>
@@ -177,9 +210,7 @@ export const BroadcastsView = () => {
             sx={{ backgroundColor: '#C3EFAD', mt: 2 }}
             button={{
               text: 'Create new',
-              action: () => {
-                console.log('Create broadcast');
-              },
+              action: handleBroadcastingPageClick,
             }}
           >
             <Typography color="#43483F" fontSize={14} sx={{ minHeight: 42 }}>

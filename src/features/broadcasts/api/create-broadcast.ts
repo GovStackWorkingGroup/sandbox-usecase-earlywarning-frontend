@@ -6,7 +6,7 @@ import { MutationConfig } from '@/lib/react-query';
 import { Broadcast } from '@/types/api';
 
 export const createBroadcast = ({ threatId }: { threatId: string }): Promise<Broadcast> => {
-  return threatApi.post(`/v1/broadcasts`, { threatId }, { headers: attachToken().headers });
+  return threatApi.post(`/api/v1/broadcasts`, { threatId }, { headers: attachToken().headers });
 };
 
 type UseCreateBroadcastOptions = {

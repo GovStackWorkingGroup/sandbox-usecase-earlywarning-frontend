@@ -9,6 +9,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { MainErrorFallback } from '@/components/errors/main';
 import { Spinner } from '@/components/ui/spinner/spinner';
 import { defaultTheme } from '@/config/theme';
+import { LogViewerProvider } from '@/hooks/log-viewer-provider';
 import { AuthLoader } from '@/lib/auth';
 import { queryConfig } from '@/lib/react-query';
 
@@ -29,14 +30,16 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       <ThemeProvider theme={defaultTheme}>
         <CssBaseline />
         <SnackbarProvider>
-          <ErrorBoundary FallbackComponent={MainErrorFallback}>
-            <HelmetProvider>
-              <QueryClientProvider client={queryClient}>
-                {import.meta.env.DEV && <ReactQueryDevtools />}
-                <AuthLoader renderLoading={() => <Spinner />}>{children}</AuthLoader>
-              </QueryClientProvider>
-            </HelmetProvider>
-          </ErrorBoundary>
+          <LogViewerProvider>
+            <ErrorBoundary FallbackComponent={MainErrorFallback}>
+              <HelmetProvider>
+                <QueryClientProvider client={queryClient}>
+                  {import.meta.env.DEV && <ReactQueryDevtools />}
+                  <AuthLoader renderLoading={() => <Spinner />}>{children}</AuthLoader>
+                </QueryClientProvider>
+              </HelmetProvider>
+            </ErrorBoundary>
+          </LogViewerProvider>
         </SnackbarProvider>
       </ThemeProvider>
     </React.Suspense>

@@ -5,7 +5,7 @@ import { attachToken, threatApi } from '@/lib/api-client';
 import { MutationConfig } from '@/lib/react-query';
 
 export const deleteBroadcast = ({ broadcastId }: { broadcastId: string }) => {
-  return threatApi.delete(`/v1/broadcasts/${broadcastId}`, { headers: attachToken().headers });
+  return threatApi.delete(`/api/v1/broadcasts/${broadcastId}`, { headers: attachToken().headers });
 };
 
 type UseDeleteBroadcastOptions = {

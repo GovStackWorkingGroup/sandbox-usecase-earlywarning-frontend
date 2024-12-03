@@ -5,7 +5,7 @@ import { QueryConfig } from '@/lib/react-query';
 import { User } from '@/types/api';
 
 export const getUserById = ({ userId }: { userId: string }): Promise<User> => {
-  return userApi.get(`/v1/users/${userId}`, {
+  return userApi.get(`/api/v1/users/${userId}`, {
     headers: attachToken().headers,
   });
 };

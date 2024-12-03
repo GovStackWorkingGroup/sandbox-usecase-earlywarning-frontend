@@ -1,6 +1,5 @@
 import {
   Box,
-  CSSObject,
   Icon,
   IconButton,
   List,
@@ -8,16 +7,15 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  styled,
   TextField,
-  Theme,
   Toolbar,
   Typography,
+  useTheme,
 } from '@mui/material';
-import MuiDrawer from '@mui/material/Drawer';
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
+import { Drawer } from '@/components/ui/drawer/drawer';
 import { paths } from '@/config/paths';
 
 type SideNavigationItem = {
@@ -30,55 +28,14 @@ type SideNavigationItem = {
 
 const drawerWidth = 240;
 
-const openedMixin = (theme: Theme): CSSObject => ({
-  width: drawerWidth,
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  overflowX: 'hidden',
-});
-
-const closedMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  overflowX: 'hidden',
-  width: `calc(${theme.spacing(8)} + 1px)`,
-});
-
-const Drawer = styled(MuiDrawer, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme }) => ({
-  width: drawerWidth,
-  flexShrink: 0,
-  whiteSpace: 'nowrap',
-  boxSizing: 'border-box',
-  variants: [
-    {
-      props: ({ open }) => open,
-      style: {
-        ...openedMixin(theme),
-        '& .MuiDrawer-paper': openedMixin(theme),
-      },
-    },
-    {
-      props: ({ open }) => !open,
-      style: {
-        ...closedMixin(theme),
-        '& .MuiDrawer-paper': closedMixin(theme),
-      },
-    },
-  ],
-}));
-
 type SidebarProps = {
   isSidebarOpen: boolean;
   openSidebar: () => void;
 };
 
 export const Sidebar = ({ isSidebarOpen, openSidebar }: SidebarProps) => {
+  const theme = useTheme();
+
   const navigation = [
     { name: 'Dashboard', to: paths.app.dashboard.getHref(), icon: 'space_dashboard' },
     { name: 'Threats', to: paths.app.threats.getHref(), icon: 'content_paste', count: 1 }, // TODO: Add items count
@@ -94,6 +51,8 @@ export const Sidebar = ({ isSidebarOpen, openSidebar }: SidebarProps) => {
 
   return (
     <Drawer
+      closedwidth={`calc(${theme.spacing(8)} + 1px)`}
+      openwidth={`${drawerWidth}px`}
       variant="permanent"
       open={isSidebarOpen}
       sx={{

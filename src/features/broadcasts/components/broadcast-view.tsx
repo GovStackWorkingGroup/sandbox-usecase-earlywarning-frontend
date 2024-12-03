@@ -383,13 +383,9 @@ export const BroadcastView = ({ broadcastId }: { broadcastId: string }) => {
                   </Fragment>
                 ))}
             </Box>
-            {['DRAFT', 'PROCESSING', 'PENDING'].includes(broadcast.status) && (
+            {['DRAFT', 'PENDING'].includes(broadcast.status) && (
               <Box display="flex" justifyContent="flex-end" sx={{ mt: 2 }}>
-                <Button
-                  variant="contained"
-                  color="error"
-                  onClick={() => console.log('Button clicked')}
-                >
+                <Button variant="contained" color="error" onClick={() => console.log('Cancel')}>
                   Cancel
                 </Button>
               </Box>

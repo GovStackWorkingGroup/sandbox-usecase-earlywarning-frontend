@@ -14,12 +14,12 @@ function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   return config;
 }
 
-function handleUserApiResponse(response: AxiosResponse) {
+function handleApiResponse(response: AxiosResponse) {
   return response.data;
 }
 
-function handleUserApiError(error: AxiosError<ErrorResponse>) {
-  const message = error.response?.data?.message || error.message;
+function handleApiError(error: AxiosError<ErrorResponse>) {
+  const message = error.response?.data?.message ?? error.message;
 
   enqueueSnackbar(message, {
     variant: 'error',
@@ -44,14 +44,21 @@ export const userApi = Axios.create({
 });
 
 userApi.interceptors.request.use(authRequestInterceptor);
-userApi.interceptors.response.use(handleUserApiResponse, handleUserApiError);
+userApi.interceptors.response.use(handleApiResponse, handleApiError);
 
 export const threatApi = Axios.create({
   baseURL: env.THREAT_API_URL,
 });
 
 threatApi.interceptors.request.use(authRequestInterceptor);
-threatApi.interceptors.response.use(handleUserApiResponse, handleUserApiError);
+threatApi.interceptors.response.use(handleApiResponse, handleApiError);
+
+export const logApi = Axios.create({
+  baseURL: env.LOG_API_URL,
+});
+
+logApi.interceptors.request.use(authRequestInterceptor);
+logApi.interceptors.response.use(handleApiResponse, handleApiError);
 
 export const attachToken = (headers?: Record<string, string>) => {
   const accessToken = localStorage.getItem('accessToken');

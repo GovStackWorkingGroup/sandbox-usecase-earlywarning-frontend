@@ -35,7 +35,7 @@ export const getBroadcasts = (
     params.sort = sort;
   }
 
-  return threatApi.get(`/v1/broadcasts`, {
+  return threatApi.get(`/api/v1/broadcasts`, {
     params,
     headers: attachToken().headers,
   });

@@ -3,7 +3,6 @@ FROM node:lts-alpine3.18 AS builder
 WORKDIR /app
 
 COPY . .
-COPY .env.example .env
 
 RUN yarn install && yarn build
 
